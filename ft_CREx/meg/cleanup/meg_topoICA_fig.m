@@ -54,7 +54,7 @@ function meg_topoICA_fig(comp_MEGdata,specopt)
 %
 % Fonctions specifiques utilisees :
 % Fieldtrip : ft_topoplotIC pour representer les cartes de topographie.
-% CREx_Toolbox et export_fig.m
+% ft_CREx et export_fig.m
 % Toolbox Fieldtrip fieldtrip_20130825
 %_________________________
 % CREx 28/10/2013
@@ -66,40 +66,40 @@ function meg_topoICA_fig(comp_MEGdata,specopt)
 
 % Path of the Fieldtrip ICA component matrix
 if nargin==2 && isfield(specopt,'pathcompmat')
-    pmat=specopt.pathcompmat;
+    pmat = specopt.pathcompmat;
 else
-    pmat=pwd; % Default
+    pmat = pwd; % Default
 end
 % Path of the directory where figures will be saved
 if nargin==2 && isfield(specopt,'pathsavfig')
-    fdos=specopt.pathsavfig;
+    fdos = specopt.pathsavfig;
 else
-    fdos=pwd; % Default
+    fdos = pwd; % Default
 end
 % Number of topographic plot per figure (for topographics plot only figures)
 if nargin==2 && isfield(specopt,'nbtopoplot')
-    nbp=specopt.nbtopoplot;
+    nbp = specopt.nbtopoplot;
 else
-    nbp=20;
+    nbp = 20;
 end
 % Zoom applied to temporal signal of ICA component for topo+temporal plots
 if nargin==2 && isfield(specopt,'xlimzoom')
     if isempty(specopt.xlimzoom) || (ischar(specopt.xlimzoom))
-        zoom=0;
+        zoom = 0;
     else
         if length(specopt.xlimzoom)==1
             xlimzoom = [specopt.xlimzoom specopt.xlimzoom+10];
-            zoom=1;
+            zoom = 1;
         elseif length(specopt.xlimzoom)==2
-            xlimzoom=specopt.xlimzoom;
-            zoom=1;
+            xlimzoom = specopt.xlimzoom;
+            zoom = 1;
         else
             zoom = 0;
         end
     end
 else
-    xlimzoom=[0 10]; % Default 
-    zoom=1;
+    xlimzoom = [0 10]; % Default 
+    zoom = 1;
 end
  
 
@@ -174,28 +174,28 @@ for nf = 1:length(vfig)
         end
     end
     if numcomp >= lgc
-        iend=lgc;
+        iend = lgc;
     else
-        iend=numcomp;
+        iend = numcomp;
     end
-    tit={['ICA from RUNICA calculation - Components plot [',num2str(nf),']']
+    tit = {['ICA from RUNICA calculation - Components plot [',num2str(nf),']']
         ['datapath = ',pmat]};
     annotation(gcf,'textbox','String',tit,'interpreter','none',...
         'FontSize',13,'fontname','AvantGarde',...
         'LineStyle','none','HorizontalAlignment','center',...
         'FitBoxToText','off','Position',[0.1 0.88 0.9 0.12]);
 
-    namfig=['CompoPlot_',nfss,'_comp_',num2str(vfig(nf)),'_to_',num2str(iend)];
+    namfig = ['CompoPlot_',nfss,'_comp_',num2str(vfig(nf)),'_to_',num2str(iend)];
     export_fig([fdos,filesep,namfig,'.jpeg'],'-m1.5')
     
     if zoom
-        vzoom=xlimzoom;
-        for ns=1:nbp
+        vzoom = xlimzoom;
+        for ns = 1:nbp
             numcomp = vfig(nf)+ns-1;
             if numcomp <= lgc
                 subplot(nbp,4,(ns-1)*4+2:(ns-1)*4+4)
                 plot(comp_MEGdata.time{1},comp_MEGdata.trial{1}(numcomp,:))
-                pos=get(gca,'position');
+                pos = get(gca,'position');
                 set(gca,'position',[pos(1)-0.08 pos(2) pos(3)+0.1 pos(4)])
                 xlim(vzoom)
                 ylabel('Magnetic field (T)','fontsize',12)
@@ -204,18 +204,18 @@ for nf = 1:length(vfig)
             end
         end
         if numcomp >= lgc
-            iend=lgc;
+            iend = lgc;
         else
-            iend=numcomp;
+            iend = numcomp;
         end
-        tit={['ICA from RUNICA calculation - Components plot [',num2str(nf),']']
-        ['datapath = ',pmat]};
+        tit = {['ICA from RUNICA calculation - Components plot [',num2str(nf),']']
+        ['datapath = ', pmat]};
         annotation(gcf,'textbox','String',tit,'interpreter','none',...
             'FontSize',13,'fontname','AvantGarde',...
             'LineStyle','none','HorizontalAlignment','center',...
             'FitBoxToText','off','Position',[0.1 0.88 0.9 0.12]);
     
-        namfig=['CompoPlot_',nfss,'_comp_',num2str(vfig(nf)),'_to_',num2str(iend),'_',num2str(vzoom(2)),'s'];
+        namfig = ['CompoPlot_',nfss,'_comp_',num2str(vfig(nf)),'_to_',num2str(iend),'_',num2str(vzoom(2)),'s'];
         export_fig([fdos,filesep,namfig,'.jpeg'],'-m1.5')
     end
     close

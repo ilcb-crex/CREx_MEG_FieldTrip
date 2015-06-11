@@ -42,7 +42,7 @@ if nargin==0
     return;
 end
 if nargin == 1
-    savpath = megpath;
+    savpath = make_dir(fullfile(megpath, 'ForwardCoreg'), 1);
 end
 
 %------

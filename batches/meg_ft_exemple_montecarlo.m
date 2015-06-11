@@ -25,7 +25,7 @@
 %          subj: {20x1 cell}
 %
 % Source signals (sourceGA.Morpho.z) have been average per anatomical ROI
-% based on Cloin27 template (116 ROIs)
+% based on Colin27 template (116 ROIs)
 % Average signals have been stored in 
 % sourceGA_aROIsubj.Morpho :
 %     avgROIsubj: {116x1 cell}
