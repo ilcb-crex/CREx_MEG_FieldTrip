@@ -15,14 +15,11 @@
 % Parameters to adjust
 
 %--- Architecture indiquant l'accès aux dossiers conteannt les donnees MEG
-% Utilisee par la fonction make_pathlist pour creer la liste des chemin
-% d'acces aux donnees multi-sujets
-% Voir >> help make_pathlist
 p0 = 'F:\ADys_BaPa';
 pmeg = cell(1,2);
-pmeg{1,1} = {p0};             pmeg{1,2}= 0;
-pmeg{2,1} = {'CAC', 'DYS'};   pmeg{2,2}= 0; 
-pmeg{3,1} = {'S'};            pmeg{3,2}= 1; 
+pmeg{1,1} = {p0};   pmeg{1,2}= 0;
+pmeg{2,1} = {'CAC'};   pmeg{2,2}= 0; 
+pmeg{3,1} = {'S14'};   pmeg{3,2}= 1; 
 % p1{4,1} = {'Run_1'}; p1{4,2}= 1;
 
 %--- Vecteur des indices des donnees des sujets a traiter selon pmeg
@@ -34,17 +31,16 @@ vdo = [];
 %--- Processus a lancer
 doEvList = 0;   
 doExtractRaw = 0;
-
 doFilt = 0;
-doFFT = 1;
-doChanCheck = 1;
+doFFT = 0;
+doChanCheck = 0;
 
 doBadChan = 0;
 doPadArt = 0;
 
 doICA = 0;
 doICAfig = 0;
-doRejComp = 0;
+doRejComp = 1;
 
 %--- Options specifiques aux differents calculs
 
@@ -55,6 +51,9 @@ fftopt.datatyp = 'filt';
 %_doChanCheck : Type de donnees a utiliser pour sortir les figures de
 % representant les valeurs moyennes de l'enveloppe de Hilbert par capteur
 ccopt.datatyp = 'filt';
+
+%_doICA
+icaopt.numcomp = 'all'; % 'all'
 
 %_doBadChan
 badopt.datatyp = 'filt'; % '4d' , 'filt' , 'clean' ....
@@ -77,9 +76,6 @@ filtopt.type = 'bp'; %'bp'; % Apply filters to the dataset
 % 'ask' : Ask for it, for each dataset
 filtopt.fc = [0.5 300]; % Cut-off frequency of high-pass filter
 
-%_doICA
-icaopt.numcomp = 'all'; % 'all'
-
 % ________
 
 load_CREx_pref
@@ -87,7 +83,7 @@ ft_defaults % Add FieldTrip subdirectory
 
 datapaths = make_pathlist(pmeg);
 if isempty(vdo)
-    vdo=1:length(datapaths);
+    vdo = 1:length(datapaths);
 end
 
 % ________
@@ -95,8 +91,8 @@ end
 
 if doEvList==1
     dirlist = make_dir(fullfile(p0, 'All_events_lists'));
-    for np=vdo
-        fprintf(['\n-------------------------[',num2str(np),']----------------']);
+    for np = vdo
+        disp_progress(np, vdo);
         meg_read_events(datapaths{np}, dirlist);
     end
 end
@@ -104,8 +100,8 @@ end
 % ________
 % Extract raw data set
 if doExtractRaw==1
-    for np=vdo
-        fprintf(['\n-------------------------[',num2str(np),']----------------']);
+    for np = vdo
+        disp_progress(np, vdo);
         fprintf('\nProcessing of data in :\n%s\n\n',datapaths{np});
         rawData = meg_extract4d(datapaths{np});
         if ~isempty(rawData)
@@ -117,8 +113,8 @@ end
 % ________
 % Apply filter to the dataset if filtopt.type~='none'
 if doFilt==1
-    for np=vdo  
-        fprintf(['\n-------------------------[',num2str(np),']----------------']);
+    for np = vdo  
+        disp_progress(np, vdo);
         meg_cleanup_filt(datapaths{np},filtopt)
     end
 end
@@ -126,8 +122,8 @@ end
 % ________
 % FFT calculation on fftopt.datatyp data set
 if doFFT==1
-    for np=vdo
-        fprintf(['\n-------------------------[',num2str(np),']----------------']);
+    for np = vdo
+        disp_progress(np, vdo);
         meg_cleanup_fft(datapaths{np},fftopt)
     end
 end
@@ -135,8 +131,8 @@ end
 % ________
 % Check relative mean value of envelope signal over all channels
 if doChanCheck==1
-    for np=vdo
-        fprintf(['\n-------------------------[',num2str(np),']----------------']);
+    for np = vdo
+        disp_progress(np, vdo);
         meg_cleanup_chancheck(datapaths{np},ccopt)
     end
 end
@@ -144,8 +140,8 @@ end
 % ________
 % Check for BAD channels to remove from dataset
 if doBadChan==1
-    for np=vdo
-        fprintf(['\n-------------------------[',num2str(np),']----------------']);
+    for np = vdo
+        disp_progress(np, vdo);
         badopt = meg_cleanup_badchan(datapaths{np},badopt);
     end
 end
@@ -155,8 +151,8 @@ end
 % Exclude artefact window on all channels
 % by padding by miror of the surrounding data
 if doPadArt==1
-    for np=vdo
-        fprintf(['\n-------------------------[',num2str(np),']----------------']);
+    for np = vdo
+        disp_progress(np, vdo);
         meg_cleanup_padart(datapaths{np})
     end
 end
@@ -165,8 +161,8 @@ end
 % ICA processing : analysis of ICA component to remove artefacts
 % 
 if doICA==1
-    for np=vdo
-        fprintf(['\n-------------------------[',num2str(np),']----------------']);
+    for np = vdo
+        disp_progress(np, vdo);
         meg_cleanup_ICAproc(datapaths{np}, icaopt)
     end
 end
@@ -175,8 +171,8 @@ end
 % ICA component analysis plots
 % 
 if doICAfig==1
-    for np=vdo
-        fprintf(['\n-------------------------[',num2str(np),']----------------']);
+    for np = vdo
+        disp_progress(np, vdo);
         meg_cleanup_ICAplot(datapaths{np})
     end
 end
@@ -192,8 +188,9 @@ if doRejComp==1
     % Input of bad components for all datasets
     allbad = cell(length(vdo),1);
     b = 1;
-    for np=vdo 
-        fprintf(['\n-------------------------[',num2str(np),']----------------']);
+    for np = vdo 
+        disp_progress(np, vdo);
+        
         allbad{b} = meg_rmcomp_input(datapaths{np});
         b = b+1;
     end
@@ -201,8 +198,8 @@ if doRejComp==1
     % - - - 
     % Remove it    
     b = 1;
-    for np=vdo
-        fprintf(['\n-------------------------[',num2str(np),']----------------']);
+    for np = vdo
+        disp_progress(np, vdo);
 
         meg_cleanup_rmICA(datapaths{np},allbad{b})
         b = b+1;

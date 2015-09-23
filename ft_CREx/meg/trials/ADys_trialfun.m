@@ -20,7 +20,7 @@ S = S(strcmp(ctyp,etyp)==1 | strcmp(ctyp,rtyp)==1);
 % sans verifier le type de l'evenement : car elles sont differentes dans la 
 % manip ADys selon le type (trigger ou reponse)
 
-val=cell2mat({S.value})';  % Dans val, il y a l'ensemble des triggers et responses
+val = cell2mat({S.value})';  % Dans val, il y a l'ensemble des triggers et responses
 sampl = cell2mat({S.sample})';
 
 trigval =  cfg.trialdef.eventvalue;  % Valeurs des triggers recherchees

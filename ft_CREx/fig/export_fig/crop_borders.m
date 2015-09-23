@@ -14,7 +14,7 @@
 
 function [A, v] = crop_borders(A, bcol, padding)
 if nargin < 3
-    padding = 0;
+    padding = 10; %--CREx add
 end
 [h, w, c, n] = size(A);
 if isscalar(bcol)

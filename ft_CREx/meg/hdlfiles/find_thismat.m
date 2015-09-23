@@ -1,4 +1,4 @@
-function [pdata,ndata]=find_thismat(path,prefix,procsuffix)
+function [pdata,ndata]=find_thismat(path, prefix, procsuffix)
 % Special function to find MAT data file with the specific name :
 %                  [prefix,'*',procsuffix,'*.mat']
 %

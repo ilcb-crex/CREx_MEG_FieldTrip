@@ -1,5 +1,6 @@
 function meg_extract_epoch(dpath, dftopt)
-
+fprintf('\n------\nData set epoching\n-----\n\n');
+fprintf('\nProcessing of data in :\n%s\n\n', dpath);
 %______
 % Check for input
 
@@ -32,14 +33,14 @@ else
 end
 freadevent = str2func(dftopt.trigfun);
 
-disp('Extraction of trials according to trigger values')
+fprintf('\nExtraction of trials according to trigger values');
 fprintf('\n--------\nEvents reading\n--------\n');
 
 
 % Load cfg_event if existing
 pmat = dirlate(dpath,'cfg_event.mat');
-if isempty(pmat)
-    datafile = filepath4d(dpath);
+datafile = filepath4d(dpath);
+if isempty(pmat)   
     if ~isempty(datafile)        
         disp(' ')
         disp('Read trigger values from raw data set')
@@ -56,7 +57,6 @@ if isempty(pmat)
         extr = false;
     end
 else
-    datafile = [];
     disp(' ')
     disp('Read trigger values from cfg_event.mat structure')
     disp('(previously saved)')
@@ -72,12 +72,12 @@ if extr
 
     fprintf('\n-------\nLoad of clean dataset\n-------\n')
 
-    [pdat,ndat]=dirlate(dpath, 'cleanData*.mat');
+    [pdat,ndat] = dirlate(dpath, 'cleanData*.mat');
 
     if ~isempty(pdat)
-        ok=1;
+        ok = 1;
     else
-        [pdat,ndat]=dirlate(dpath, 'filtData*.mat');
+        [pdat,ndat] = dirlate(dpath, 'filtData*.mat');
         if ~isempty(pdat)
             ok=1;
         else
