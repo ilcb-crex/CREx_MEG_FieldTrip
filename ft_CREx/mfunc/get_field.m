@@ -1,8 +1,6 @@
 function val = get_field(S, fname, typ)
 % Find value of a field in a complexe structure - with embedded structures
-% S : the structure
-% fname : name of the field from which we search the value
-% typ : expected variable type 
+% 
 %disp(['Search for value in fieldname ',fname])
 
 if nargin == 3 && ~isempty(typ)
@@ -38,7 +36,7 @@ if isstruct(S)
     end
     if isempty(val)
         for n = 1:length(Snames)
-            % disp(['Check inside : ',Snames{n}]) 
+            %disp(['Check inside : ',Snames{n}]) 
             val = get_field(S.(Snames{n}), fname, typ);
             if ~isempty(val)
                 return;

@@ -20,7 +20,7 @@ function meg_topoER_frame(Savgtrial, figopt)
 %   figopt.lgwin : duration of each windows (the same for all sliding versions)
 %                   (in seconds) [default: 0.020]
 %
-%   figopt.fname : names of the experimental condition, which will be added
+%   figopt.fname : name of the experimental condition, which will be added
 %                   to the title of the figure [default: '']
 %
 %   figopt.savpath : path of the directory where figures will be saved
@@ -82,13 +82,13 @@ if isfield(Savgtrial,'planar')
     ylab2 = 'Sqr planar gradient (T^2 m^{-2})';
     zu = 'T m^{-1}';
     datyp = 'ERF (planar grad)';
-    savt= 'Planar';
+  %  savt= 'Planar';
 else
     ylab = 'Magnetic field (T)';
     ylab2 = 'Sqr magnetic field (T^2)';
     zu = 'T';
     datyp = 'ERF';
-    savt= '';
+   % savt= '';
 end
 
 Savgtrial.dimord = 'chan_time';
@@ -116,7 +116,7 @@ for w = 1:length(iwin)
         numfram = num2str(w);
     end
     % Name of the figure file which will be saved
-    namsav{w} = name_save(['TopoER',savt,'Frame',addsav,'_',numfram,'_',msi{w},'_to_',msf{w},'ms']);
+    namsav{w} = name_save(['TopoERFrame',addsav,'_',numfram,'_',msi{w},'_to_',msf{w},'ms']);
 end
 
  % Fixe the range of the colormap (fixed over the entire scanning signal)

@@ -2,37 +2,35 @@
 % ________
 % Parameters to adjust
 %p0='G:\Catsem';
-p0 = 'F:\BaPa';
-p1 = cell(1,2);
-p1(1,:)= {{p0} , 0};
-p1(2,:)= {{'CAC','DYS'}, 0}; 
-p1(3,:)= {{'S'}, 1}; 
-% p1(4,:)={{'Run_concat'},0};
-
+p0='H:\ADys';
+p1=cell(1,2);
+p1{1,1}= {p0};    p1{1,2}= 0;
+p1{2,1}= {'CAC'};   p1{2,2}= 0; 
+p1{3,1}= {'S02'};  p1{3,2}= 0; 
+p1{4,1}= {'Run_2'}; p1{4,2}= 0;
+  
 % p0='Tests\Test_LocalSpheres\Tests_Sophie'; %'F:\ADys';
 % p1=cell(1,2);
 % p1{1,1}= {p0};    p1{1,2}= 0;
 % p1{2,1}= {'MEGdata'};   p1{2,2}= 0; 
 
-% freadevent = @define_bapa_triggevent; %@define_catsem_triggevent; % %@define_adys_triggevent;
+freadevent = @define_adys_triggevent; %@define_catsem_triggevent; %@define_adysBaPa_triggevent; %@define_adys_triggevent;
 
 dftopt = struct;
-dftopt.trialfun = []; %'ADys_trialfun'; 
-dftopt.prestim = 0.5; %2; % Pre-stimulus time (s): duration before stimulus - positive number
+dftopt.trialfun = 'ADys_trialfun'; % []
+dftopt.prestim = 0.5; %2; % Pre-stimulus time (s)
 dftopt.postim = 1; %2;   % Post-stimulus time (s)
-dftopt.trigfun = 'define_bapa_triggevent'; %'define_adys_triggevent'; % 'define_catsem_triggevent'; % 'define_sophie_triggevent';
-dftopt.bsl = [-0.5 0]; % ADys : [-0.5 -0.3];
-dftopt.dofig = 1;
+dftopt.trigfun = 'define_adys_triggevent'; % 'define_catsem_triggevent'; % 'define_sophie_triggevent';
+dftopt.bsl = [-0.5 -0.3];
+dftopt.dofig = 0;
 
-
+vdo = []; %[]; 
 % Vecteur des indices des donnees a traiter
 % vdo=[]; => sur toutes les donnees trouvees selon l'architecture p1
 % vdo = 1:10; => sur les 10 premieres donnees
 % vdo=17; : sur la 17eme donnee
-vdo = []; 
 
-
-doExtract = 0;
+doExtract = 1;
 doRmBadT = 0;
 doRmBadChan = 0;
 doAvgT = 1;
@@ -41,15 +39,15 @@ doSupAvgICA = 0;
 
 
 % Postprocessing options applied to trials (after averaging)
-trialopt = struct;
+trialopt=struct;
 % Redefined trial window 
 trialopt.redef.do = 0;      % 0 : don't redefined, 1 : redefined according to redef.win new time window
 trialopt.redef.win = [0 0]; % [t_prestim t_postim](stim : t=0s, t_prestim is negative)
 % Apply Low-Pass filter
-trialopt.LPfilt.do = 1; %0;   % 0 : don't filter ; 1 : do it with cut-off frequency LPfilt.fc 
-trialopt.LPfilt.fc = 40; %40;   % Low-pass frequency
+trialopt.LPfilt.do = 0; %0;   % 0 : don't filter ; 1 : do it with cut-off frequency LPfilt.fc 
+trialopt.LPfilt.fc = 25; %40;   % Low-pass frequency
 % Resample trials
-trialopt.resamp.do = 1;   % 0 : don't resample ; 1 : resample according to resamp.fs new frequency
+trialopt.resamp.do = 0;   % 0 : don't resample ; 1 : resample according to resamp.fs new frequency
 trialopt.resamp.fs = 240;   % New sample frequency
 % Resampling can reduce some aberrant covariance values
 
@@ -62,7 +60,7 @@ alldp = make_pathlist(p1);
 
 
 if isempty(vdo)
-    vdo = 1:length(alldp);
+    vdo=1:length(alldp);
 end
 
 if doAvgT==1
@@ -71,7 +69,7 @@ end
 
 if doExtract==1
     for np=vdo
-        disp_progress(np, vdo);
+        fprintf(['\n-------------------------[',num2str(np),']----------------']);
         fprintf('\nProcessing of data in :\n%s\n\n',alldp{np});
         meg_extract_epoch(alldp{np}, dftopt)
     end                        
@@ -82,9 +80,9 @@ end
 % 
 if doRmBadChan==1
     badopt = struct; % Initialisation
-    for np = vdo
-        disp_progress(np, vdo);
-        
+    for np=vdo
+        fprintf(['\n-------------------------[',num2str(np),']----------------\n']);
+        fprintf('\nProcessing of data in :\n%s\n\n',alldp{np});
         badopt = meg_extract_badchan(alldp{np}, badopt);
     end
 end
@@ -93,38 +91,10 @@ end
 % Reject of bad trials
 % 
 if doRmBadT==1
-    %--- First, enter bad trials indices for each condition and data set
-    firstload = 1;
-    allbadt = cell(length(vdo), 1);
-    b = 1;
-    for np = vdo
-        dpath = alldp{np};
-        disp_progress(np, vdo);
-        fprintf('\nProcessing of data in :\n%s\n\n', dpath);
-
-        % Load the first available trials dataset to know the conditions names (fieldnames)
-        [pmat, nmat] = dirlate(dpath,'allTrials*.mat');
-        if ~isempty(pmat)
-            if firstload || ~exist('fnames','var')
-                allT = loadvar(pmat,'*Trial*');
-                fnames = fieldnames(allT);
-                firstload = 0;
-                fprintf('The detected conditions are');
-            end
-            allbadt{b} = meg_rmtrials_input(pmat, fnames);            
-        else
-            allbadt{b} = [];
-        end
-        b = b + 1;
-    end
-    
-    %--- Then, remove the bad trials    
-    b = 1;
-    for np = vdo
-        disp_progress(np, vdo);
-        fprintf('\nProcessing of data in :\n%s\n\n', alldp{np});
-        meg_extract_rmbad(alldp{np}, allbadt{b})
-        b = b + 1;
+    for np=vdo
+        fprintf(['\n-------------------------[',num2str(np),']----------------\n']);
+        fprintf('\nProcessing of data in :\n%s\n\n',alldp{np});
+        meg_extract_rmbad(alldp{np})
     end
 end
             
@@ -133,16 +103,16 @@ end
 % Average trials per condition
 % 
 if doAvgT==1
-    for np = vdo
-        disp_progress(np, vdo);
+    for np=vdo
+        fprintf(['\n-------------------------[',num2str(np),']----------------']);
         meg_extract_avg(alldp{np},trialopt)
     end
 end
 
 
 if doExtractICA==1
-    for np = vdo
-        disp_progress(np, vdo);
+    for np=vdo
+        fprintf(['\n-------------------------[',num2str(np),']----------------']);
         fprintf('\nProcessing of data in :\n%s\n\n',alldp{np});
         
         datafile = filepath4d(alldp{np});
@@ -161,7 +131,6 @@ if doExtractICA==1
 
         % Specific function to define events (events name and associated
         % values)
-        freadevent = str2func(dftopt.trigfun);
         triggevent = freadevent(cfg_event);
 
         fprintf('\n-------\nLoad of ICA components dataset\n-------\n')
@@ -208,7 +177,7 @@ if doExtractICA==1
                     disp('Problem with average...')
                 end
             end
-            suff=meg_find_matsuffix(ndat);
+            suff = meg_find_matsuff(ndat);
             if ~isempty(suff)
                 suff=['_',suff]; %#ok
             end
@@ -222,8 +191,8 @@ end
 if doSupAvgICA==1
     ICAdir='ICACompAvgT*';
     ICAdat='avgComp*.mat';
-    for np = vdo
-        disp_progress(np, vdo);
+    for np=vdo
+        fprintf(['\n-------------------------[',num2str(np),']----------------']);
         fprintf('\nProcessing of data in :\n%s\n\n',alldp{np});
         ok=0;
         

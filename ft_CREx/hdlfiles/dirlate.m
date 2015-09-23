@@ -1,4 +1,4 @@
-function [pathfile, namefile] = dirlate(path, nam)
+function [pathfile, namefile] = dirlate(path,nam)
 dfile = dir([path,filesep,nam]);
 if ~isempty(dfile)
     if length(dfile)>1

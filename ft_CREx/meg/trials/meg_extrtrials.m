@@ -20,15 +20,19 @@ function trials = meg_extrtrials(dft, Sevent, contData)
 % Check dft structure - put default value if missing field 
 
 defdft = struct('prestim',.5,'postim',1,'trialfun','ft_trialfun_general',...
-    'trig', struct('eventyp','TRIGGER','resptyp','RESPONSE'), 'datafile', []);
-
-dft = check_opt(dft, defdft); 
+    'eventyp','TRIGGER','resptyp','RESPONSE');
+fnames = fieldnames(defdft);
+for n = 1:length(fnames)
+    if ~isfield(dft,fnames{n}) || isempty(dft.(fnames{n}))==1
+        dft.(fnames{n}) = defdft.(fnames{n});
+    end
+end
 
 % fsample needed for custom determination of trials to keep
 if isfield(contData,'fsample')
     fsample = contData.fsample;
-elseif (isfield(contData,'hdr') && isfield(contData.hdr,'Fs'))
-    fsample = contData.hdr.Fs;
+elseif isfield(contData,'hdr') && isfield(contData.hdr,'Fs')
+        fsample = contData.hdr.Fs;
 else
     disp('fsample not found...')
     tim = contData.time{1};
@@ -38,15 +42,8 @@ end
 cfg = [];
 cfg.event = Sevent;
 cfg.trialfun = dft.trialfun ; 
-% If trialfun is the Fieldtrip default one 'ft_trialfun_general', the
-% datafile path is required to extract events (l. 74)
-if (strcmp(dft.trialfun, 'ft_trialfun_general') == 1)
-    if ~isempty(dft.datafile)
-        cfg.headerfile = dft.datafile;
-    else
-        warning(['Datafile path required to run extraction with default',...
-        'ft_trialfun_general function'])
-    end
+if strcmp(dft.trialfun, 'ft_trialfun_general')==1
+    cfg.datafile = dft.datafile;
 end
 cfg.trialdef.eventvalue = dft.trig.value; % Code du type d'evenement considere
 cfg.trialdef.prestim    = dft.prestim;
@@ -64,7 +61,7 @@ cfg_trial   = ft_definetrial(cfg);
 
 % Ajout verification si longueur donnees > indice des essais dans
 % cfg_trial.trl
-if any(cfg_trial.trl(:,2) > length(contData.time{1}))
+if any(cfg_trial.trl(:,2)>length(contData.time{1}))
     disp(' ')
     disp('!!! Continuous data length inferior to trials indices definition')
     disp(['Data length : ',num2str(length(contData.time{1})),' points'])
@@ -80,22 +77,4 @@ end
 cfg=[];
 cfg.trl = cfg_trial.trl;  
 trials = ft_redefinetrial(cfg, contData); 
-
-%______
-% Check for input options
-function dftopt = check_opt(dftopt, dftopt_def)
-    % Default fieldnames
-    fopt = fieldnames(dftopt_def);
-    for i = 1 : length(fopt)
-        % We had the default field if not present in dftopt  
-        if ~isfield(dftopt, fopt{i}) || isempty(dftopt.(fopt{i}))
-            dftopt.(fopt{i}) = dftopt_def.(fopt{i});
-        else
-            % If the field contain a structure, we check each subfield 
-            % values too
-            if isstruct(dftopt.(fopt{i}))
-                dftopt.(fopt{i}) = check_opt(dftopt.(fopt{i}), dftopt_def.(fopt{i})); 
-            end  
-        end
-    end
 
