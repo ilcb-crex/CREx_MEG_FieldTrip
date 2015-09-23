@@ -1,4 +1,4 @@
-function triggevent = define_adysBaPa_triggevent(Sevent)
+function triggevent = define_bapa_triggevent(Sevent)
 
 eventyp = 'TRIGGER';
 typ = {Sevent.type};
