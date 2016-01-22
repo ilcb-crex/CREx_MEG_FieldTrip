@@ -63,7 +63,7 @@ else
 end
 % Adding MRI name to the figure file if specified in opt structure
 if ~isempty(opt.mripath)
-    [T,nam]=fileparts(opt.mripath); %#ok
+    [T,nam] = fileparts(opt.mripath); %#ok
     addt = [addt,nam,'_'];
 end
 export_fig([opt.savpath, filesep, 'CheckVolGrid',addt,'3Ddisp_',datestr(now,'yymmdd_HHMM'),'.png'],'-m1.5')

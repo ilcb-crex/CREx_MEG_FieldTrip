@@ -242,7 +242,7 @@ if doLoc==1
                      %   meg_loc_momZfig(sourC,fnam,fdos,nampath4fig)
                     end
 
-                    suff = meg_matsuff(nTmat,strproc);
+                    suff=meg_find_matsuffix(nTmat,strproc);
                     if ~isempty(suff)
                         suff=['_',suff]; %#ok
                     end
@@ -407,7 +407,7 @@ if doClassLoc==1
                         sourceCondCBF_meth2.(fnam)=sourC{1};
                     end
                     
-                    suff=meg_matsuff(nTmat,strproc);
+                    suff=meg_find_matsuffix(nTmat,strproc);
                     if ~isempty(suff)
                         suff=['_',suff]; %#ok
                     end

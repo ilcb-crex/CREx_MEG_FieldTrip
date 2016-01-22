@@ -9,7 +9,7 @@ if nargin<4 || isempty(tBSL)
 end
 
 % Trials fields using in trials multi-condition structures
-if nargin <3 || isempty(fnames)
+if nargin <3 || isempty(fnames) 
     fnames = '';
     cmod = 1;
 else

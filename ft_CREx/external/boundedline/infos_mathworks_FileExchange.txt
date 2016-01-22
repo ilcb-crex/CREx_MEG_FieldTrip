@@ -1,0 +1,26 @@
+http://www.mathworks.fr/matlabcentral/fileexchange/27485-boundedline--line-plots-with-shaded-error-confidence-intervals
+
+boundedline: line plots with shaded error/confidence intervals
+
+by Kelly Kearney
+
+05 May 2010 (Updated 10 Jul 2014)
+
+Plot one or more lines with a shaded boundary (can represent error, confidence intervals, etc). 
+
+
+Description 	
+
+This function allows you to plot one or more lines with their error range/confidence intervals/whatever bounds you require. It provides an advantage over several other similar entries on the FEX in that it:
+1) allows x-y input similar to plot, where one call can create multiple lines at once, either by listing consecutive x-y pairs or by using using matrices for x and/or y.
+2) can add bounds in either the x- or y-direction, leading to support of plots where the x axis represents the dependent variable
+
+3) can render the shaded bounds either with transparency or as a lighter opaque patch, allowing flexibility with different renderers (helpful when OpenGL acts up, as it often does on my own computer).
+
+4) Can use linespec definitions, a colormap, or the default color order, as well as varying color intensity for the shaded bounds, for flexible color of lines and bounds
+
+5) returns handles of lines and patches for future modification if necessary
+Acknowledgements 	
+
+Confplot, Errorfill, Shaded Error Bar, and Inpaint Nans inspired this file.
+MATLAB release 	MATLAB 7.5 (R2007b) 

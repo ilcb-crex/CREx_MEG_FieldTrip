@@ -193,13 +193,13 @@ spmeg_checkdatareg(datareg, subj_mesh, figopt);
 % Build vol
 template_vol_spm = export(gifti(template_mesh.(['tess_',volType])), 'spm');
 
-template_vol=[];
+template_vol = [];
 template_vol.bnd = export(gifti(template_vol_spm), 'ft');
 template_vol.type = 'nolte';
 
 % Adding cortex volume 
 template_ctx_spm = export(gifti(template_mesh.tess_ctx), 'spm');
-template_ctx=[];
+template_ctx = [];
 template_ctx.bnd = export(gifti(template_ctx_spm), 'ft');
 
 

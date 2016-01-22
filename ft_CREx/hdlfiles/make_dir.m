@@ -1,4 +1,4 @@
-function fpath = make_dir(dirpath,new)
+function fpath = make_dir(dirpath, new)
 % CREATION_DOSSIER cree le dossier dans lequel les resultats
 % des calculs (matrices, figures) seront stockes
 %
