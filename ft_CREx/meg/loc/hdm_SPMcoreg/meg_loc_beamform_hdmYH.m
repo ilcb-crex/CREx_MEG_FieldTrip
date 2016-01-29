@@ -135,6 +135,17 @@ sourceAll  = ft_sourceanalysis(cfg, avgTrialsAll);
 % each condition
 cfg.grid.filter = sourceAll.avg.filter;
 
+% Fix the dipole orientations that will be used by beamformer_lcmv
+% (the same for all the conditions)
+% ori = zeros(3, length(sourceAll.pos(:,1)));
+% ins = sourceAll.inside;
+% ori(:, ins) = reshape(cell2mat(), 3, length(ins));
+% cfg.grid.mom = ori;
+
+cfg.lcmv.fixedori   = 'no'; 
+% Orientations have been previously fixed to compute the spatial filter
+% considering all the conditions
+
 %----
 
 disp('Compute source signal and Z-normalization')
@@ -144,6 +155,8 @@ sourceCond = struct;
 for j = 1:length(fcond)
     cond = fcond{j};
     sourC = ft_sourceanalysis(cfg, avgTrialsCond.(cond));
+    % Add optimal orientation (arise from sourceanalysis on all conditions)
+    sourC.avg.ori = sourceAll.avg.ori;
     mom = sourC.avg.mom;
     time = sourC.time;
     iBSL = find(time > tBSL(1) & time < tBSL(2));
@@ -157,7 +170,7 @@ for j = 1:length(fcond)
             sourC.avg.z2{n} = sourC.avg.z{n}.^2;                                    
         end
     end
-    sourceCond.(cond)=sourC;
+    sourceCond.(cond) = sourC;
 
     % Figures of the superimposed source signals
     meg_loc_sourcesup_fig(sourC, tBSL, cond, fdos, addonfig)

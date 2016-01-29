@@ -3,9 +3,9 @@ fprintf('\nProcessing of data in :\n%s\n\n',dpath);
 
 disp('Average of trials per condition')
 fprintf('\n--------\nLoad of *Trials*.mat\n--------\n');
-[pmat,nmat]=dirlate(dpath,'cleanTrials*.mat');
+[pmat,nmat] = dirlate(dpath,'cleanTrials*.mat');
 if isempty(pmat)
-    [pmat,nmat]=dirlate(dpath,'allTrials*.mat');
+    [pmat,nmat] = dirlate(dpath,'allTrials*.mat');
 end
 if ~isempty(pmat)
     Strial = loadvar(pmat,'*Trial*');
@@ -17,7 +17,7 @@ else
     ftrial=[];
 end
 
-avgTrialsCond=struct;
+avgTrialsCond = struct;
 for j=1:length(ftrial)
     trials = Strial.(ftrial{j});
 
@@ -39,7 +39,7 @@ for j=1:length(ftrial)
         end
         % Post-process trials data as specified in trialopt
         % structure
-        [avgT,trialopt,strproc] = meg_trials_preproc(avgT,trialopt);
+        [avgT, trialopt, strproc] = meg_trials_preproc(avgT, trialopt);
         if j==1
             fdos = make_dir([dpath,filesep,'TrialsAvg_plots',strproc],1);
         end

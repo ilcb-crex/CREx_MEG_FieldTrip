@@ -1,0 +1,4 @@
+From single_subj_T1_1mm.nii of the fieldtrip directory (fieldtrip/template/anatomy)
+SPM segmentation as been processed to obtain head volume (skull and cortex) => template_Colin27_FT.mat.
+
+Attention, un artefact est présent sur le scalp modéliser par SPM à partir de single_subj_T1_1mm.nii (une protubérence anormale sur le dessus de la tête) => on pourrait s'attendre à un léger décalage lors de la coregistration de ce scalp avec le headshape.

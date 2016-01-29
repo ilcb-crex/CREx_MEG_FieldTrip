@@ -1,18 +1,15 @@
-function meg_ERF_topoplot(dpath, matpref, strproc, framopt)
+function meg_ERF_topoplot(dpath, datopt, framopt)
 
 disp(' '), disp(['--> ', dpath])
 fprintf('\n\n\t-------\nERF analysis : topographic plots\n\t-------\n')
 
-matname = [matpref, '*', strproc,'*.mat'];
-
-fprintf('\nSearch of : %s\nInside : %s\n\n', matname, dpath);
-
-[pavg, navg] = dirlate(dpath, matname);
+[pavg, navg] = find_datamat(dpath, datopt);
 
 if isempty(pavg)   
     return;
 end
 
+strproc = preproc_suffix(datopt.preproc);
 disp(['Using : ', navg]) 
 avgCond = loadvar(pavg,'avgTrialsCond*'); 
 

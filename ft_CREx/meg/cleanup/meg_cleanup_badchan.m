@@ -79,7 +79,7 @@ if length(CHANstr)>1
         delete([p;gca])
     end
     close
-    namsav=['_',num2str(length(CHANstr)-1),'rmS'];
+    namsav = ['_',num2str(length(CHANstr)-1),'rmS'];
 else
     namsav='';
 end
