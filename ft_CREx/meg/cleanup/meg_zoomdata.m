@@ -33,7 +33,7 @@ vfig = 1:nbp:lgc;
 vputbottom = .008:.005:.008+5*.005;
 xlz = [0 10]+100; % Zoom sur le temps
 tp = td(td>=xlz(1) & td<xlz(2));
-tp = tp-tp(1);
+tp = tp - tp(1);
 xp = xall(:,td>=xlz(1) & td<xlz(2));
 dtpeak = 4; % 4 s autour du pic max
 

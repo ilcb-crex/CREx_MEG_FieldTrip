@@ -2,11 +2,13 @@
 % Parameters to adjust
 
 % Paths for MEG datasets
-p0 = 'F:\BaPa';
-p1 = cell(1,2);
-p1(1,:)= {{p0} , 0};
-p1(2,:)= {{'CAC'}, 0}; 
-p1(3,:)= {{'S01'}, 1}; 
+p0 = 'F:\bapa_mseeg';
+
+p1 =    {{p0} , 0
+        {'MEG'}, 0
+        {'S01'}, 0
+        {'Run'}, 1
+         }; 
 
 vdo = [];  
 % Vecteur des indices des donnees a traiter
@@ -15,21 +17,24 @@ vdo = [];
 % vsdo=17; : sur la 17eme donnees
 
 % Choice of calculus to perform
-doTopoERfig = 0;
-doChanGroup = 1;
+doTopoERfig = 1;
+doChanGroup = 0;
 doClusterStat = 0;
 
 matpref = 'avgTrials';
-%--- Type de donnees recherchees en fonction du pretraitement effectue
+%--- Data to process as a function of preprocessing still made
 % Data preprocessing suffix
-preproc = struct;
-preproc.LPfc    = 40;   % Low-pass frequency
-preproc.resfs   = 240;   % New sample frequency
-preproc.crop    = [0 0]; % [t_prestim t_postim](stim : t=0s, t_prestim is negative)
+datopt = [];
+datopt.datatyp = 'avgTrials';
+datopt.preproc.HPfc    = 1;     % High-pass frequency
+datopt.preproc.LPfc    = 25;    % Low-pass frequency
+datopt.preproc.resfs   = 200;   % New sample frequency
+datopt.preproc.crop    = [0 0]; % [t_prestim t_postim](stim : t=0s, t_prestim is negative)
 
-framopt = struct;
-framopt.slidwin = -0.08 : 0.01 : 0.8;
-framopt.lgwin = 0.02;
+%--- Figure option : sliding window parameters
+framopt = [];
+framopt.slidwin = -0.050 : 0.010 : 0.700;  % Starts of each window
+framopt.lgwin = 0.02 ;                   % Duration of each window
 
 % ________
 
@@ -42,21 +47,18 @@ if isempty(vdo)
     vdo = 1:length(alldp);
 end
 
-strproc = preproc_suffix(preproc);
-
-
 
 if doTopoERfig == 1
     for np = vdo 
         disp_progress(np, vdo);
-        meg_ERF_topoplot(alldp{np}, matpref, strproc, framopt)
+        meg_ERF_topoplot(alldp{np}, datopt, framopt)
     end   
 end    
 
 if doChanGroup==1
     for np = vdo 
         disp_progress(np, vdo);
-        meg_ERF_changroup(alldp{np}, matpref, strproc)        
+        meg_ERF_changroup(alldp{np}, datopt)        
     end
 end
 

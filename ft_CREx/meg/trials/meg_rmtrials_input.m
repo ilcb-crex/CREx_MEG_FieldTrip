@@ -11,21 +11,26 @@ disp('Keep all trials -> 2')
 
 rep = input('                -> ');
 
+Nc = length(fnames);
 Sbad = struct; 
-if rep==1
 
-    % Enter bad trials indices for each condition    
-    for j = 1 : length(fnames)
-        fcond = fnames{j};
-       
+
+% Enter bad trials indices for each condition    
+for j = 1 : Nc
+    cond = fnames{j};
+
+    if rep==1
         % Bad trial indices
         % A priori, there will never have more than 1000 indices of bad
         % trials input
-        ibadt = input_badtrial(fcond, 1e3); 
-
-        Sbad.(fcond) = ibadt;
+        ibadt = input_badtrial(cond, 1e3); 
+    else
+        ibadt = [];
     end
+
+    Sbad.(cond) = ibadt;
 end
+
 
 %-- Enter bad trials and confirm selection
 function ibadtrials = input_badtrial(fcond, ntrials)

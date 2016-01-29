@@ -44,31 +44,31 @@ function cfg_rawData = meg_disp_event(datapath, savpath)
 if nargin~=2 || isempty(savpath)
     sav=0;
 else
-    namsavdef='All_events_list.txt';
+    namsavdef = 'All_events_list.txt';
     if isempty(strfind(savpath,filesep)) % savpath est un nom seul et non un chemin
-        savpath=[pwd,filesep,savpath];   % Chemin par defaut : pwd
+        savpath = [pwd,filesep,savpath];   % Chemin par defaut : pwd
     end
     if isdir(savpath) % savpath est le chemin d'un dossier et non du fichier txt a sauver
-        savpath=fullfile(savpath,namsavdef);
-        sav=1;
+        savpath = fullfile(savpath,namsavdef);
+        sav = 1;
     else
         if ~strcmp(savpath(end-3:end),'.txt')
-            dos =fileparts(savpath);
+            dos = fileparts(savpath);
             if isdir(dos)
-                savpath=fullfile(dos,namsavdef);
-                sav=1;
+                savpath = fullfile(dos,namsavdef);
+                sav = 1;
             else
                 try
                     mkdir(dos)
-                    sav=1;
+                    sav = 1;
                 catch
-                    sav=0;
+                    sav = 0;
                     disp(['Path of txt file to save : ',savpath]) 
                     disp('is BAD...')
                 end
             end
         else
-            sav=1;
+            sav = 1;
             if ~isempty(dir(savpath))
                 disp(' ')
                 disp(['File ',savpath])
@@ -86,17 +86,17 @@ end
 fprintf('\nRead event(s) in :\n%s\n',datapath);
 fprintf('\n--------\nHeader informations\n--------\n');
 fprintf('Reading of header by ft_read_header\n\n') 
-[fe,dur,nbchan]=deal([]);
+[fe,dur,nbchan] = deal([]);
 try
-    hdr=ft_read_header(datapath);
-    fnam=fieldnames(hdr);
+    hdr = ft_read_header(datapath);
+    fnam = fieldnames(hdr);
     if ~isempty(strcmp('Fs',fnam)) && ~isempty(strcmp('nSamples',fnam))
-        fe=hdr.Fs;
-        npoint=hdr.nSamples;
-        dur=(npoint-1)./fe;
+        fe = hdr.Fs;
+        npoint = hdr.nSamples;
+        dur = (npoint-1)./fe;
     end
     if ~isempty(strcmp('nChans',fnam))
-        nbchan=hdr.nChans;
+        nbchan = hdr.nChans;
     end   
 catch
     disp('OMG Header is not readable...')
@@ -119,7 +119,7 @@ try
         S = struct('event',struct('nothing',[]));
     else
         ok=1;
-        S=cfg_rawData.event;
+        S = cfg_rawData.event;
         % Ajout de la valeur de la frequence d'echantillonnage 
         cfg_rawData.fsample = fe;       
     end
@@ -132,9 +132,9 @@ end
 % ________
 % Display data informations & events 
 
-fnam=fieldnames(S);
-bigC=cell(length(S),size(fnam,1));
-for nf=1:size(fnam,1)
+fnam = fieldnames(S);
+bigC = cell(length(S),size(fnam,1));
+for nf = 1:size(fnam,1)
     bigC(:,nf)={S.(fnam{nf})};
 end
 if sav

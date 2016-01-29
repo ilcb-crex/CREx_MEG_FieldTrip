@@ -69,8 +69,8 @@ else
     vtck = deltay*tckl(1);
 end
 
-yi = yl(1)+0.5*vtck;
-yf = yl(2)-0.5*vtck;
+yi = yl(1) + 0.5*vtck; % Instead of 0.5
+yf = yl(2) - 0.5*vtck;
 yw = yf-yi;
 
 %- Plot each rectangle
