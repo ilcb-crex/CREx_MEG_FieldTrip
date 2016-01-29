@@ -299,7 +299,7 @@ if isbitmap(options)
         A = uint8(A);
         % Crop the background
         if options.crop
-            [alpha, v] = crop_borders(alpha, 0, 1);
+            [alpha, v] = crop_borders(alpha, 0, 20); %--CREx add 151001 ini : [alpha, v] = crop_borders(alpha, 0, 1);
             A = A(v(1):v(2),v(3):v(4),:);
         end
         if options.png
@@ -346,7 +346,7 @@ if isbitmap(options)
         end
         % Crop the background
         if options.crop
-            A = crop_borders(A, tcol, 1);
+            A = crop_borders(A, tcol, 20);
         end
         % Downscale the image
         A = downsize(A, options.aa_factor);

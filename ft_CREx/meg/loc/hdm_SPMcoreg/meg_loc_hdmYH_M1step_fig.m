@@ -1,6 +1,6 @@
 function meg_loc_hdmYH_M1step_fig(Sdat, savpath)
 
-opengl('OpenGLWobbleTesselatorBug',1)
+% opengl('OpenGLWobbleTesselatorBug',1)
 
 vview = [-180 0 ; 90 0 ; -180 90];
 titview = {'[ View 1 ]'; '[ View 2 ]'; '[ View 3 ]'};
