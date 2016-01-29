@@ -1,4 +1,10 @@
 function meg_extract_epoch(dpath, dftopt)
+% Epoching of continuous data
+% Baseline correction is done for each trial if dftopt.bsl is not empty 
+% (not done otherwise)
+% 
+% as well as preprocessing
+
 fprintf('\n------\nData set epoching\n-----\n\n');
 fprintf('\nProcessing of data in :\n%s\n\n', dpath);
 %______
@@ -10,7 +16,8 @@ dftopt_def = struct('trialfun','ft_trialfun_general',...
                     'prestim',.5,...
                     'postim',1,...
                     'bsl',[],...
-                    'dofig',1);
+                    'dofig',1,...
+                    'trialopt', []);
                 
 if nargin <2 || isempty(dftopt)==1
     dftopt = dftopt_def;
@@ -26,12 +33,16 @@ if dftopt.postim < 0
     dftopt.postim = abs(dftopt.postim);
 end
     
-if isempty(dftopt.bsl)
-    BSL = [-1*dftopt.prestim 0];
+if isempty(dftopt.bsl) || length(dftopt.bsl)==1
+    BSL = [];
+    % BSL = [-1*dftopt.prestim 0];
 else
     BSL = dftopt.bsl;
 end
 freadevent = str2func(dftopt.trigfun);
+
+trialopt = dftopt.trialopt;
+strproc = [];
 
 fprintf('\nExtraction of trials according to trigger values');
 fprintf('\n--------\nEvents reading\n--------\n');
@@ -109,11 +120,18 @@ if extr
             end
             trials = meg_extrtrials(dftopt, cfg_event, cleanData);
 
+            % Apply post-processing
+            if ~isempty(trialopt)
+                [trials, ~, strproc] = meg_trials_preproc(trials, trialopt);
+            end
+            
             % Remove baseline  
-            cfg = [];
-            cfg.demean = 'yes'; 
-            cfg.baselinewindow = BSL; 
-            trials = ft_preprocessing(cfg,trials);
+            if ~isempty(BSL)
+                cfg = [];
+                cfg.demean = 'yes'; 
+                cfg.baselinewindow = BSL; 
+                trials = ft_preprocessing(cfg,trials);
+            end
 
             if dftopt.dofig
                 % Plot and save figures of each trial 
@@ -122,9 +140,9 @@ if extr
 
             allTrials.(triggevent(nc).name) = trials;
         end
-        suff = meg_matsuff(ndat,[num2str(dftopt.prestim+dftopt.postim),'s']);
+        suff = meg_matsuff(ndat,[num2str(dftopt.prestim+dftopt.postim),'s', strproc]);
         if ~isempty(suff)
-            suff=['_',suff]; 
+            suff = ['_',suff]; 
         end
         save([dpath,filesep,'allTrials',suff,'.mat'],'allTrials')
     end

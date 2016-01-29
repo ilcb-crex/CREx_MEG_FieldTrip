@@ -82,32 +82,32 @@ end
 [spsparam,stcalc]=check_stackparam(xall(1,:),fsamp,spsparam,default);
 
 if stcalc
-    lgsp=floor(spsparam.dur*fsamp+1);  % Number of sample per elementary spectrum
-    lgspm=lgsp*spsparam.n;             % Total length of used data to make the stack
-    ixi=floor(spsparam.dur*2*fsamp+1); % The first 2*sps_dur s are excluded 
-    ixf=ixi+lgspm-1;
-    nsampst=2^nextpow2(lgsp);			
-    freqst=(fsamp/nsampst)*(0:(nsampst/2)-1);
-    allFFTstack=zeros(length(xall(:,1)),length(freqst));
-    for c=1:length(xall(:,1)) % Per channel
-        xd=xall(c,:);
+    lgsp = floor(spsparam.dur*fsamp+1);  % Number of sample per elementary spectrum
+    lgspm = lgsp*spsparam.n;             % Total length of used data to make the stack
+    ixi = floor(spsparam.dur*2*fsamp+1); % The first 2*sps_dur s are excluded 
+    ixf = ixi+lgspm-1;
+    nsampst = 2^nextpow2(lgsp);			
+    freqst = (fsamp/nsampst)*(0:(nsampst/2)-1);
+    allFFTstack = zeros(length(xall(:,1)),length(freqst));
+    for c = 1:length(xall(:,1)) % Per channel
+        xd = xall(c,:);
         % Stack
-        xdp=xd(ixi:ixf);
-        fxall=zeros(spsparam.n,length(freqst));
-        for s=1:spsparam.n
-            vind=(1:lgsp)+(s-1)*lgsp;
-            fxd=fft(xdp(vind),nsampst);
-            fxall(s,:)=abs(fxd(1:nsampst/2))*2./nsampst;
+        xdp = xd(ixi:ixf);
+        fxall = zeros(spsparam.n,length(freqst));
+        for s = 1:spsparam.n
+            vind = (1:lgsp)+(s-1)*lgsp;
+            fxd = fft(xdp(vind),nsampst);
+            fxall(s,:) = abs(fxd(1:nsampst/2))*2./nsampst;
         end
-        allFFTstack(c,:)=mean(fxall);
+        allFFTstack(c,:) = mean(fxall);
     end
 else
-    allFFTstack=[];
-    freqst=[];
+    allFFTstack = [];
+    freqst = [];
 end
 
 
-function [spsparam,stcalc] = check_stackparam(xdata,fsamp,spsparam,default)
+function [spsparam, stcalc] = check_stackparam(xdata,fsamp,spsparam,default)
 
 td = 0:1/fsamp:(length(xdata)-1)/fsamp;
 lgsp = floor(spsparam.dur*fsamp+1);  % Number of sample per elementary spectrum
@@ -115,12 +115,12 @@ lgspm = lgsp*spsparam.n;             % Total length of used data to make the sta
 ixi = floor(spsparam.dur*2*fsamp+1); % The first sps_dur*2 s are excluded 
 ixf = ixi+lgspm-1;
 if spsparam.dur==default.dur && spsparam.n==default.n
-    def=1;
+    def = 1;
 else
-    def=0;
+    def = 0;
 end
 % Duration of data too short
-if ixf>length(xdata)
+if ixf > length(xdata)
     % Reduction of the number of consecutive spectrum to be stacked
     spsparam.n = floor((td(end)-td(ixi))./spsparam.dur);
     if spsparam.n<2

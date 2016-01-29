@@ -14,9 +14,9 @@ else
 end
 
 if ~isempty(opt.grpname)
-    addsav = [opt.grpname,'_'];
+    grpnam = [opt.grpname,'_'];
 else
-    addsav = '';
+    grpnam = '';
 end
 
 if strcmp(opt.mode, 'fast')
@@ -48,11 +48,19 @@ alphaTHR = clustROI.(supcond{1}).clustat.alphaTHR;
 Nrand = clustROI.(supcond{1}).clustat.Nrand;
 sparam = ['Nrnd=',num2str(Nrand), '; alphaTHR=',num2str(alphaTHR), '; durTHR=',num2str(durTHR.*1000,'%4d'),'ms'];
 
-if isempty(opt.ylim)
-    YL = det_ylim(SavgROI, iroi);
-else
-    YL = opt.ylim;
+Sylim = det_ylim(SavgROI, iroi);
+ % Absolute ylim is given
+if ~isempty(opt.ylim)
+    yabs = opt.ylim;
+    % ylim given to be apply for all groups, per ROI
+    if length(yabs(:,1)) == length(Alab)
+        Sylim.ylim_allgrp_eachroi = yabs;    
+        Sylim.ylim_allgrp_allroi = [min(yabs(:,1)) max(yabs(:,2))];
+    else
+        Sylim.ylim_allgrp_allroi = yabs;
+    end
 end
+fylim = fieldnames(Sylim);
 
 if isempty(opt.xlim)
     XL = [ SavgROI.(cond{1}).time(1) SavgROI.(cond{1}).time(end)];
@@ -82,53 +90,54 @@ for i = 1 : length(supcond)
 
     colsup = [col.(spcond{1}); col.(spcond{2})];
    
-    for n = iroi  
-        
-        numdip = SavgROI.(spcond{1}).numdip(n);
+    for n = 1 : length(iroi)  
+        ir = iroi(n);
+        numdip = SavgROI.(spcond{1}).numdip(ir);
         if numdip > 0
-            Cavg = [avgR1(n) ; avgR2(n)];
-            cdur = clustROI.(supcond{i}).dur{n};
+            Cavg = [avgR1(ir) ; avgR2(ir)];
+            cdur = clustROI.(supcond{i}).dur{ir};
             
             if ~isempty(cdur)
                 Clust.dur = cdur;
-                Clust.itime = clustROI.(supcond{i}).itime{n};
-                Clust.pval = clustROI.(supcond{i}).pval{n};
+                Clust.itime = clustROI.(supcond{i}).itime{ir};
+                Clust.pval = clustROI.(supcond{i}).pval{ir};
             else
                 Clust = struct('dur',[],'itime',[]);    
             end
             if ~onlyWhenClust || (onlyWhenClust && ~isempty(Clust.dur))
                 snum = ['(Ndip=',num2str(numdip), '; Nsubj=', ssubj, '; ', sparam,')']; 
                 
-                tit = {['Mean source signal in ', Alab{n},' ROI'];
+                tit = {['Mean source signal in ', Alab{ir},' ROI'];
                     snum};
                 if dispCI
-                    Cci = [SavgROI.(spcond{1}).confintROI(n)
-                        SavgROI.(spcond{2}).confintROI(n)];
+                    Cci = [SavgROI.(spcond{1}).confintROI(ir)
+                        SavgROI.(spcond{2}).confintROI(ir)];
                 else
                     Cci = [];
                 end
-%                 yc = Cavg;
-%                 col = colsup;
-%                 legstr = spcond;
-%                 titstr = tit;
-%                 ylimit = YL(n,:);
-                
-                ROIfig(time, Cavg, colsup, spcond, tit, Clust, XL, YL(n,:), Cci)
 
-                export_fig([psav, filesep, 'clustime_aROI_', addsav, supcond{i}, '_', Alab{n},'.jpg'],'-m2.5','-nocrop') %,'-zbuffer') %'.eps'
-          %      export_fig([psav, filesep, 'clustime_aROI_', addsav, supcond{i}, '_', Alab{n},'.eps'],'-m1.5','-nocrop')
-                plot2svg([psav, filesep, 'clustime_aROI_', addsav, supcond{i}, '_', Alab{n},'.svg'])
-                close 
+                for k = 1 : length(fylim)
+                    ylimits = Sylim.(fylim{k});
+                    if length(ylimits(:,1)) == length(Alab)
+                        YL = ylimits(ir,:);
+                    else
+                        YL = ylimits;
+                    end
+
+                    ROIfig(time, Cavg, colsup, spcond, tit, Clust, XL, YL, Cci)
+                    addsav = def_name({supcond{i} ;  Alab{ir}});
+                    savnam = ['clustime_aROI_', grpnam, addsav,'_', fylim{k}];
+                    export_fig([psav, filesep, savnam,'.jpg'],'-m2.5','-nocrop') %,'-zbuffer') %'.eps'
+                     export_fig([psav, filesep, savnam,'.eps'],'-nocrop')
+                    % plot2svg([psav, filesep, savnam,'.svg']) %--> don't
+                    % transform tex code
+                    close
+                end
             end
         end 
     end
 end
  
-% yc = Cavg;
-% col = colsup;
-% legstr = spcond;
-% titstr = tit;
-
 
 function ROIfig(time, yc, col, legstr, titstr, Clust, xlimit, ylimit, Cci)
     if ~isempty(Clust.dur)
@@ -140,8 +149,9 @@ function ROIfig(time, yc, col, legstr, titstr, Clust, xlimit, ylimit, Cci)
         psign = 0;
     end
     
-    figure, set(gcf,'visible','off','units','centimeters','position',[10 10 8.4 7.1]) % 'off'
-    
+    figure
+    set(gcf,'visible','off','units','centimeters','position',[10 10 8.4 7.1])
+    set(gca, 'position', [0.142 0.153 0.798 0.642])
     %--- Signals plot
     %subplot(2, 6, [1:4 7:10])
     hold on
@@ -173,28 +183,36 @@ function ROIfig(time, yc, col, legstr, titstr, Clust, xlimit, ylimit, Cci)
     xl(1) = xl(1) - 0.001;
     xlim(xl)    
     
+%     
+%       H = diff(ylimit);
+%     ylimit = [ylimit(1)-0.08*H  ylimit(2)+ 0.08*H];
     yl = ylimit;
-    
+    %--- Put time grid and time labels in ms
+    xu = put_xgrid(xl, yl, 0.100, 9);    
     %--- Time markers (vertical dotted lines), y and x-axis
-    
+%     
     % Time grid
-    dtg = 0.100;
-    vgini = -5 : dtg : 5; 
-    % Suppose no signal with pre- and post- stimulation duration < 10 s
-    igi = find(vgini > XLF(1), 1, 'first');
-    igf = find(vgini < XLF(2), 1, 'last');
-    vgrid = vgini(igi:igf);
-    vgrid = repmat(vgrid, 2, 1);
-    line(vgrid, repmat(yl,length(vgrid),1)', 'color',[.45 .45 .45],'linestyle',':','linewidth', 0.8)
-    set(gca, 'xtick',[])
-    ylim(yl) 
-    % Time labels in ms
-    for v = 1:length(vgrid(1,:))
-        text(vgrid(1,v), yl(1)-diff(yl)./20, num2str(vgrid(1,v)*1e3,'%3.0f'),...
-            'fontsize',9, 'horizontalalignment','center')
-    end
+%     dtg = 0.100;
+%     vgini = -5 : dtg : 5; 
+%     % Suppose no signal with pre- and post- stimulation duration < 10 s
+%     igi = find(vgini > XLF(1), 1, 'first');
+%     igf = find(vgini < XLF(2), 1, 'last');
+%     vgrid = vgini(igi:igf);
+%    vgrid = repmat(vgrid, 2, 1);
 
-    set(gca, 'fontsize', 8)
+%     line(vgrid, repmat(ygrd, length(vgrid), 1)', 'color',[.45 .45 .45],'linestyle',':','linewidth', 0.8)
+%     set(gca, 'xtick',[])
+     
+%     % Time labels in ms
+%     for v = 1:length(vgrid(1,:))
+%         text(vgrid(1,v), yl(1)-diff(yl)./20, num2str(vgrid(1,v)*1e3,'%3.0f'),...
+%             'fontsize',9, 'horizontalalignment','center')
+%     end
+%     set(gca, 'xtick', vgrid)
+%     set(gca, 'xtickLabel', vgrid*1000)
+%     set(gca, 'xgrid', 'on')
+    set(gca, 'fontsize', 9)
+%     ylim(yl)
     % Add ANOVA window define by WOI in s
     if psign
         disp(' ')
@@ -217,11 +235,13 @@ function ROIfig(time, yc, col, legstr, titstr, Clust, xlimit, ylimit, Cci)
     disp(' ')
     
     uistack(hp, 'top');
+
     %--- Annotations (x and y label, title, legend) - disappear if done
     % before atlas drawing
-    annotation(gcf,'textarrow',[0.812 0.812],[0.0443 0.0443], 'String','Time from target onset (ms)', 'FontSize',10,...
-    'HeadStyle','none','LineStyle', 'none'); %,'color',[.5 .5 .5]  % [0.812 0.812],[0.063 0.063]
-    
+    annotation(gcf,'textarrow',[0.812 0.812],[0.0443 0.0443],...
+        'String',['Time from target onset (', xu,')'], 'FontSize',10,...
+    'HeadStyle','none','LineStyle', 'none'); 
+
     %--- Scale of y axis (ylabel)
     ylab = 'Normalized amplitude'; 
     annotation(gcf,'textarrow',[0.041 0.041], [0.723 0.723], 'String',ylab, 'FontSize',10,...
@@ -234,11 +254,12 @@ function ROIfig(time, yc, col, legstr, titstr, Clust, xlimit, ylimit, Cci)
 
     annotation(gcf,'textbox','String', titstr{2},'interpreter','none','FontSize',7,...
     'fontangle','italic','LineStyle','none','HorizontalAlignment','center',...
-    'FitBoxToText','off','Position',[0.006 0.8657 0.98 0.079]); %[0.0095 0.8301 0.9779 0.0873]
+    'FitBoxToText','off','Position',[ 0.0060 0.8694 0.98 0.079]); %[0.0095 0.8301 0.9779 0.0873]
 
 	%--- Legend of signal plots
     put_leg(legstr,col) 
     
+    box on
    % pause
 
 %--- Define color of rectangle according to duration 
@@ -269,7 +290,7 @@ function put_leg(legcell,col)
    % delete(lg);
     annotation(gcf,'textbox','String',strtext,...
         'BackgroundColor', [1 1 1],...
-        'position',[0.1388 0.8097 0.8265 0.0709],... 
+        'position', [0.1388 0.8246 0.8044 0.0597],... %[0.1388 0.8097 0.8265 0.0709],... 
         'LineStyle','none',...
         'backgroundcolor', 'none',...
         'HorizontalAlignment','right',...
@@ -281,7 +302,7 @@ function YL = det_ylim(SavgROI, iroi)
     fcond = fieldnames(SavgROI);
     Nc = length(fcond);
     Na = length(SavgROI.(fcond{1}).label);
-    YL = zeros(Na,2);
+    yroi = zeros(Na,2);
     Da = 0.2;
     if isfield(SavgROI.(fcond{1}), 'confintROI')
         isci = true;
@@ -289,27 +310,46 @@ function YL = det_ylim(SavgROI, iroi)
         isci = false;
     end
         
-    for n = iroi
-        yc = zeros(Nc, 2);
+    for k = 1 : length(iroi)
+        ir = iroi(k);
+        ycond = zeros(Nc, 2);
         for ic = 1 : Nc
+            avg = SavgROI.(fcond{ic}).avgROI{ir};
             if ~isci
-                yc(ic, 1) = min(SavgROI.(fcond{ic}).avgROI{n});
-                yc(ic, 2) = max(SavgROI.(fcond{ic}).avgROI{n});
+                ycond(ic, 1) = min(avg);
+                ycond(ic, 2) = max(avg);
             else
-                ec = SavgROI.(fcond{ic}).avgROI{n}.confintROI{n};
-                yc(ic, 1) = min(SavgROI.(fcond{ic}).avgROI{n}-ec);
-                yc(ic, 2) = max(SavgROI.(fcond{ic}).avgROI{n}+ec);
+                ec = SavgROI.(fcond{ic}).avgROI{ir}.confintROI{ir};
+                ycond(ic, 1) = min(avg - ec);
+                ycond(ic, 2) = max(avg + ec);
             end
         end
-        YL(n,1) = min(yc(:,1))-Da;
-        YL(n,2) = max(yc(:,2))+Da;
+        yroi(ir,1) = min(ycond(:,1))-Da;
+        yroi(ir,2) = max(ycond(:,2))+Da;
     end
+    YL = struct('ylim_eachgrp_eachroi', yroi,...
+                'ylim_eachgrp_allroi', [min(yroi(:,1)) max(yroi(:,2))]);
 
+% Reduce length of file name to save (considere only the first 4 letters of
+% each name to concatenate + reduce letters of names separated by '_')
+function nam = def_name(Cnames)
+    Cnamr = Cnames;
+    for i = 1 : length(Cnames)
+        spnam = strsplitt(Cnames{i}, '_');
+        for j = 1 : length(spnam)
+            if length(spnam{j}) > 4
+                spnam{j} = spnam{j}(1:4);
+            end
+        end
+        Cnamr{i} = strjoint(spnam, '_');
+    end
+    nam = strjoint(Cnamr, '_');
+            
 %--- Check opt options
 function opt = check_opt(opt, defopt)
     fn = fieldnames(defopt);
-    for n = 1:length(fn)
-        if ~isfield(opt, fn{n}) || isempty(opt.(fn{n}))
-            opt.(fn{n}) = defopt.(fn{n});
+    for ir = 1:length(fn)
+        if ~isfield(opt, fn{ir}) || isempty(opt.(fn{ir}))
+            opt.(fn{ir}) = defopt.(fn{ir});
         end
     end

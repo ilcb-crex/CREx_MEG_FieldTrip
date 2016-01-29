@@ -1,24 +1,26 @@
-function meg_extract_rmbad(path, badtrials)
-
-fprintf('\nProcessing of data in :\n%s\n\n------\n', path);
+function meg_extract_rmbad(datapath, badtrials)
+% Remove bad trials
+fprintf('\nProcessing of data in :\n%s\n\n------\n', datapath);
 fprintf('Removing of bad trials\n\n');
 if ~nargin
-    path = pwd;
+    datapath = pwd;
 end
     
 % Check if data matrix is available
-[pmat, nmat] = dirlate(path,'allTrials*.mat');
+[pmat, nmat] = dirlate(datapath,'allTrials*.mat');
 
 if isempty(pmat)
     disp('!!! Trials data ''allTrials*.mat'' not found in the directory')
-    return;
+    return
 end
 
 % User must enter bad trial indices for each conditions if badtrials
 % structure is not provided
 if nargin < 2 
     [rmT, allTrials] = rmbad_select(pmat);
-
+    rmTrials = rmT; %#ok
+    % Save rmTrials data (could be use for further epoching)
+    save([datapath, filesep, 'rmTrials'], 'rmTrials')
 else
     rmT = badtrials;         
 end
@@ -60,9 +62,9 @@ if  nrm > 0
         cleanTrials = allTrials;   %#ok
         suff = [num2str(neff),'rmT'];
         newsuff = meg_matsuff(nmat,suff);
-        save([path,filesep,'cleanTrials_',newsuff], 'cleanTrials', 'rmT')
+        save([datapath,filesep,'cleanTrials_',newsuff], 'cleanTrials', 'rmT')
         disp('New trials dataset save as :')
-        disp([path, filesep, 'cleanTrials_', newsuff])
+        disp([datapath, filesep, 'cleanTrials_', newsuff])
     else
         disp('No trial was removed')
     end
@@ -158,8 +160,11 @@ function nTtot = sum_badtrial(Sbad)
     if ~isempty(Sbad) && isstruct(Sbad)
         fnames = fieldnames(Sbad);    
         for j = 1 : length(fnames)
-            ibad = Sbad.(fnames{j});
-            nTtot = nTtot + length(ibad(ibad > 0));
+            cond = fnames{j};
+            if ~isempty(Sbad.(cond))
+                ibad = Sbad.(cond);
+                nTtot = nTtot + length(ibad(ibad > 0));
+            end
         end
     end
     

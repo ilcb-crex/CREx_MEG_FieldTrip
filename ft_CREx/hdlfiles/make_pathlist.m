@@ -93,11 +93,12 @@ else
     if exist('parta','var')
         pathlist = parta';
         if length(arch(:,1))>2
-            newarch=cell(length(arch(:,1))-1,2);
-            newarch{1,1}=parta; newarch{1,2}=0;
-            newarch(2:length(arch(:,1))-1,1)=arch(3:length(arch(:,1)),1);
-            newarch(2:length(arch(:,1))-1,2)=arch(3:length(arch(:,1)),2);
-            arch=newarch;
+            newarch = cell(length(arch(:,1))-1,2);
+            newarch{1,1} = parta; 
+            newarch{1,2} = 0;
+            newarch(2:length(arch(:,1))-1,1) = arch(3:length(arch(:,1)),1);
+            newarch(2:length(arch(:,1))-1,2) = arch(3:length(arch(:,1)),2);
+            arch = newarch;
             pathlist = make_pathlist(arch);
         end
     end
@@ -124,33 +125,33 @@ function allfound = find_alldos(herepath, debnomdos, opt)
         opt = 1;
     end
     if opt
-        aj='*';
+        aj = '*';
     else
-        aj='';
+        aj = '';
     end
-    allfound=cell(1,1);
+    allfound = cell(1,1);
     if ~iscell(debnomdos)
-        debnomdos={debnomdos};
+        debnomdos = {debnomdos};
     end
 
-    id=1;
-    for n=1:length(debnomdos)
+    id = 1;
+    for n = 1:length(debnomdos)
 
-        fpt=[herepath,filesep,debnomdos{n},aj];
+        fpt = [herepath,filesep,debnomdos{n},aj];
         if opt
-            fd=dir(fpt);
+            fd = dir(fpt);
             if ~isempty(fd)
-                for k=1:length(fd)
+                for k = 1:length(fd)
                     if isdir([herepath,filesep,fd(k).name])
-                        allfound{id}=[herepath,filesep,fd(k).name];
-                        id=id+1;
+                        allfound{id} = [herepath,filesep,fd(k).name];
+                        id = id+1;
                     end
                 end
             end
         else
             if isdir(fpt)
-                allfound{id}=fpt;
-                id=id+1;
+                allfound{id} = fpt;
+                id = id+1;
             end
         end
 

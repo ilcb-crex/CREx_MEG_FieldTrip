@@ -14,7 +14,7 @@ p0 = figopt.savpath;
 Ng = length(cat);
 Nc = length(cond);
 Na = length(Sgaroi.(cat{1}).(cond{1}).label);
-YL = zeros(Na,2);
+
 
 if isfield(Sgaroi.(cat{1}).(cond{1}), 'confintROI')
     isCI = true;
@@ -23,31 +23,35 @@ else
 end
     
 Da = 0.2;
-for n = iroi
-    yc = zeros(Nc, 2);
-    for ic = 1 : Nc
-        yg = zeros(Ng, 2);
-        for ig = 1 : Ng
+
+ylimall = zeros(Ng, Na, 2);
+
+for ig = 1 : Ng
+    for n = 1 : length(iroi)
+        ir = iroi(n);
+        ycond = zeros(Nc, 2);
+        for ic = 1 : Nc
+            avg = Sgaroi.(cat{ig}).(cond{ic}).avgROI{ir};
             if ~isCI
-                yg(ig, 1) = min(Sgaroi.(cat{ig}).(cond{ic}).avgROI{n});
-                yg(ig, 2) = max(Sgaroi.(cat{ig}).(cond{ic}).avgROI{n});
+                ycond(ic, 1) = min(avg);
+                ycond(ic, 2) = max(avg);
             else
                 % Consider confidence interval values
-                ec = Sgaroi.(cat{ig}).(cond{ic}).confintROI{n};
-                yg(ig, 1) = min(Sgaroi.(cat{ig}).(cond{ic}).avgROI{n}-ec);
-                yg(ig, 2) = max(Sgaroi.(cat{ig}).(cond{ic}).avgROI{n}+ec);
+                ec = Sgaroi.(cat{ig}).(cond{ic}).confintROI{ir};
+                ycond(ic, 1) = min(avg - ec );
+                ycond(ic, 2) = max(avg + ec );
             end
-        end
-        yc(ic, 1) = min(yg(:,1));
-        yc(ic, 2) = max(yg(:,2));
+        end       
+        ylimall(ig, ir, 1) = min(ycond(:,1)) - Da;
+        ylimall(ig, ir, 2) = max(ycond(:,2)) + Da;   
     end
-    YL(n,1) = min(yc(:,1))-Da;
-    YL(n,2) = max(yc(:,2))+Da;
+
 end
+
 
 %--- Figure options
 fopt = figopt;
-fopt.ylim = YL;
+
 
 for i = 1 : length(cat)
 
@@ -60,6 +64,10 @@ for i = 1 : length(cat)
 
     fopt.savepath = p1;
     fopt.grpname = cat{i};
+    ymi = min(ylimall(:,:,1));
+    yma = max(ylimall(:,:,2));
+    
+    fopt.ylim = [ymi' yma'];
 
     meg_clusterstat_fig(SavgROI, clustROI, fopt)
 end

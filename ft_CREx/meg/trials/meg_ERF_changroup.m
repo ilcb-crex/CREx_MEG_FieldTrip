@@ -1,13 +1,11 @@
-function meg_ERF_changroup(dpath, matpref, strproc)
+function meg_ERF_changroup(dpath, datopt)
 
 disp(' '), disp(['--> ', dpath])
 fprintf('\n\n\t-------\nERF analysis : ERF plots for groups of channels\n\t-------\n')
 
-matname = [matpref, '*', strproc,'*.mat'];
 
-fprintf('\nSearch of : %s\nInside : %s\n\n', matname, dpath);
-
-[pavg, navg] = dirlate(dpath, matname);
+[pavg, navg] = find_datamat(dpath, datopt);
+strproc = preproc_suffix(datopt.preproc);
 
 if isempty(pavg)   
     return;

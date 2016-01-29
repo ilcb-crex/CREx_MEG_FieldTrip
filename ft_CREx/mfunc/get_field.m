@@ -1,5 +1,7 @@
 function val = get_field(S, fname, typ)
-% Find value of a field in a complexe structure - with embedded structures
+% Find value of a field placed somewhere in a complexe structure - with 
+% embedded structures
+% 
 % S : the structure
 % fname : name of the field from which we search the value
 % typ : expected variable type 

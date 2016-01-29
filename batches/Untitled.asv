@@ -1,0 +1,47 @@
+
+avgori = sourCori.avg.mom;
+avgini = sourCini.avg.mom;
+avgnofo = sournofiltori.avg.mom;
+for i = 1 : length(ins)
+    if sum(avgori{ins(i)}-avgini{ins(i)}) ~=0
+        figure, plot(time, avgori{ins(i)},'r'), hold on, plot(time, avgini{ins(i)})
+    end
+    
+    if sum(avgini{ins(i)}-avgnofo{ins(i)}) ~=0
+        figure, plot(time, avgnofo{ins(i)},'r'), hold on, plot(time, avgini{ins(i)})
+    end
+    
+end
+
+
+cfg        = [];
+cfg.method = 'lcmv';
+cfg.grid   = leadfield_grd;
+cfg.vol    = subj_vol;
+cfg.lcmv.lambda     = '5%';
+cfg.lcmv.keepfilter = 'yes';
+cfg.lcmv.fixedori   = 'yes'; % L'orientation est calculee via une ACP // orientation 3 dipoles
+sourceAll  = ft_sourceanalysis(cfg, avgTrialsAll);
+
+% Apply the filter from modeling of all average to
+% each condition
+cfg.grid.filter = sourceAll.avg.filter;
+
+% Fix the dipole orientations that will be used by beamformer_lcmv
+% (the same for all the conditions)
+% ori = zeros(3, length(sourceAll.pos(:,1)));
+% ins = sourceAll.inside;
+% ori(:, ins) = reshape(cell2mat(sourceAll.avg.ori), 3, length(ins));
+% 
+% cfg.grid.mom = ori;
+cfg.lcmv.fixedori   = 'no';
+
+sourCnew = ft_sourceanalysis(cfg, avgTrialsCond.(cond))
+avgnew = sourCnew.avg.mom;
+for i = 1 : 10 %length(ins)
+    
+    if sum(avgini{ins(i)}-avgnew{ins(i)}) ~=0
+        figure, plot(time, avgnofo{ins(i)},'r'), hold on, plot(time, avgini{ins(i)})
+    end
+    
+end

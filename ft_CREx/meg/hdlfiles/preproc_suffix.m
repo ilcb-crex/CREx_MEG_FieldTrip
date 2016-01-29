@@ -2,24 +2,31 @@ function strproc = preproc_suffix(preproc)
 
 strproc='';
 %---- FILTER
-if isfield(preproc,'LPfc') && preproc.LPfc>0
-    fcs=num2str(preproc.LPfc);
-    fcs(fcs=='.')='p';
-    strproc=[strproc,'_LP',fcs,'Hz'];
+%-- LP
+if isfield(preproc,'LPfc') && ~isempty(preproc.LPfc) && preproc.LPfc>0
+    fcs = num2str(preproc.LPfc);
+    fcs(fcs=='.') = 'p';
+    strproc = [strproc,'_LP',fcs,'Hz'];
+end
+%-- HP
+if isfield(preproc,'HPfc') && ~isempty(preproc.HPfc) && preproc.HPfc>0
+    fcs = num2str(preproc.HPfc);
+    fcs(fcs=='.') = 'p';
+    strproc = [strproc,'_HP',fcs,'Hz'];
 end
 %---- RESAMPLE
 if isfield(preproc,'resfs') && preproc.resfs>0
-    fss=num2str(preproc.resfs);
+    fss = num2str(preproc.resfs);
     fss(fss=='.')='p';
-    strproc=[strproc,'_Res',fss,'Hz'];
+    strproc = [strproc,'_Res',fss,'Hz'];
 end
 %---- CROP WINDOW
 if isfield(preproc,'crop') && length(preproc.crop)==2 && preproc.crop(1)~=0
-    win=preproc.crop;
-    winst=cell(1,2);
-    winst{1}=['m',num2str(abs(win(1)))];
-    winst{1}(winst{1}=='.')='p';
-    winst{2}=num2str(win(2));
-    winst{2}(winst{2}=='.')='p';
-    strproc=[strproc,'_Crop',winst{1},'to',winst{2},'s'];
+    win = preproc.crop;
+    winst = cell(1,2);
+    winst{1} = ['m',num2str(abs(win(1)))];
+    winst{1}(winst{1}=='.') = 'p';
+    winst{2} = num2str(win(2));
+    winst{2}(winst{2}=='.') = 'p';
+    strproc = [strproc,'_Crop',winst{1},'to',winst{2},'s'];
 end       

@@ -100,7 +100,7 @@ if trialopt.LPfilt.do
             trialData.fsample = fsample(trialData.time{1});
         end
         if strcmp(fdat,'trial')==1
-            for nt=1:length(trialData.trial)
+            for nt = 1:length(trialData.trial)
                 trialData.trial{nt} = ft_preproc_lowpassfilter(trialData.trial{nt},trialData.fsample,trialopt.LPfilt.fc);   
             end
         else
@@ -118,7 +118,7 @@ if trialopt.resamp.do
         cfg.resamplefs = trialopt.resamp.fs;
         cfg.demean     = 'yes';
         cfg.detrend    = 'no';
-        trialData = ft_resampledata(cfg,trialData);  
+        trialData = ft_resampledata(cfg, trialData);  
     end
     fss = num2str(trialopt.resamp.fs);
     fss(fss=='.') = 'p';
@@ -129,7 +129,7 @@ if trialopt.redef.do==1
     if ~isempty(trialData)
         cfg        = [];
         cfg.toilim = trialopt.redef.win;
-        trialData  = ft_redefinetrial(cfg,trialData);
+        trialData  = ft_redefinetrial(cfg, trialData);
     end
     win = trialopt.redef.win;
     winst = cell(1,2);

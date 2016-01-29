@@ -15,32 +15,38 @@
 % Parameters to adjust
 
 %--- Architecture indiquant l'accès aux dossiers conteannt les donnees MEG
-p0 = 'F:\ADys_BaPa';
-pmeg = cell(1,2);
-pmeg{1,1} = {p0};   pmeg{1,2}= 0;
-pmeg{2,1} = {'CAC'};   pmeg{2,2}= 0; 
-pmeg{3,1} = {'S14'};   pmeg{3,2}= 1; 
-% p1{4,1} = {'Run_1'}; p1{4,2}= 1;
+p0 = 'C:\Users\zielinski\Desktop\tutorial'; 
+%'C:\Users\zielinski\_Docs_\OnTheRoad\MEG\MEG_process\work\bapa_seeg';
+p1 = {  {p0}, 0
+        {'Subject01'}, 1 
+        {'Subject01.ds'}, 1
+        };
+% p1 = {  {p0}, 0
+%         {'SEEG'}, 0 
+%         {'S'}, 1     
+%         {'Run'}, 1
+%         };
+
 
 %--- Vecteur des indices des donnees des sujets a traiter selon pmeg
 % vsdo = [] : tous les dossiers trouves a partir de l'architecture pmeg
 % vdo = 1:10; => sur les 10 premieres donnees
 % vdo=17; : sur la 17eme donnee
-vdo = []; 
+vdo = []; %[]; 
 
 %--- Processus a lancer
 doEvList = 0;   
 doExtractRaw = 0;
 doFilt = 0;
-doFFT = 0;
-doChanCheck = 0;
+doFFT = 1;
+doChanCheck = 1;
 
 doBadChan = 0;
 doPadArt = 0;
 
 doICA = 0;
 doICAfig = 0;
-doRejComp = 1;
+doRejComp = 0;
 
 %--- Options specifiques aux differents calculs
 
@@ -67,21 +73,22 @@ badopt.disptool.name = 'none';
 % Voir la fonction meg_check_chan pour plus d'infos...
 
 %_doFilt
-filtopt = struct('type','','fc',[]);
+filtopt = [];
 filtopt.type = 'bp'; %'bp'; % Apply filters to the dataset 
 % 'none' : None (default) 
 % 'hp' : High-pass filter
 % 'lp' : Low-pass filter
 % 'bp' : Both (Band-pass)
 % 'ask' : Ask for it, for each dataset
-filtopt.fc = [0.5 300]; % Cut-off frequency of high-pass filter
-
+filtopt.fc = [0.5 35]; %[0.5 300]; % Cut-off frequency of high-pass filter
+filtopt.datatyp = 'raw'; %'raw'; %'clean'; % Prefix of mat data to filter in data directory 
+filtopt.figflag = 1;
 % ________
 
 load_CREx_pref
 ft_defaults % Add FieldTrip subdirectory
 
-datapaths = make_pathlist(pmeg);
+datapaths = make_pathlist(p1);
 if isempty(vdo)
     vdo = 1:length(datapaths);
 end

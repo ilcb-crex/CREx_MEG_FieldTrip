@@ -2,23 +2,23 @@
 % Parameters to adjust
 
 %---- Definition of data architecture
-% p0 = 'F:\ADys';
-% p1 = {  {p0}, 0
-%         {'CAC'}, 0 
-%         {'S21'}, 1 
-%         {'Run_concat'}, 0};
-p0 = 'F:\BaPa';
-p1 = {  {p0}, 0
-        {'CAC','DYS'}, 0 
-        {'S'}, 1
+p0 = 'C:\Users\zielinski\_Docs_\OnTheRoad\MEG\MEG_process\work\bapa_mseeg';
+pmeg = {  {p0}, 0
+        {'MEG'}, 0 
+        {'S'}, 1     
+        {'Run'}, 1
         };
-%--- Indices of data path list to treat (vsdo=[] : all found data paths)
+    
+
+% pmeg(3,:)= {{'S'}, 1}; 
+    
+    %--- Indices of data path list to treat (vsdo=[] : all found data paths)
 vsdo = [];  
 
 %--- Process to launch
 doVol = 0;  % Volume conduction model computing
-doLoc = 1;  % Beamforming localisation
-doMap = 0;  % Maps of results
+doLoc = 0;  % Beamforming localisation
+doMap = 1;  % Maps of results
 
 %--- Stimulus conditions to process
 % Only conditions field names in trials data structure will be
@@ -37,18 +37,18 @@ trialopt = struct;
 trialopt.redef.do  = 0;     % [ redef.do = 1 : do it ; 0 :  don't]  
 trialopt.redef.win = [0 0];	% [t_prestim t_postim] (s) ( ! stim at t= 0 s => t_prestim negative)
 % Apply Low-Pass filter
-trialopt.LPfilt.do = 1;       
+trialopt.LPfilt.do = 0;       
 trialopt.LPfilt.fc = 40;	% Low-pass cut-off frequency (Hz)
 % Resample trials
-trialopt.resamp.do = 1;       
-trialopt.resamp.fs = 240;	% New sample frequency (Hz)
+trialopt.resamp.do = 0;       
+trialopt.resamp.fs = 200;	% New sample frequency (Hz)
 % "Resampling can reduce some aberrant covariance values"
 
 %--- Sliding windows options for map representations
 % Mean values of source signals are calculated according to windows
 % definition and duration
 winopt = struct;
-winopt.slidwin =  -0.200 : 0.010 : 0.820; %-0.020 : 0.010 : 0.600; % -0.3 : 0.01 : 0.650;   % Starts of each window
+winopt.slidwin =  -0.050 : 0.010 : 0.700; %-0.020 : 0.010 : 0.600; % -0.3 : 0.01 : 0.650;   % Starts of each window
 winopt.lgwin = 0.02 ;                   % Duration of each window
 
 %--- Name of the MRI template for the localisation maps 
@@ -64,10 +64,10 @@ template_name = 'Colin27_BS.nii'; %'Colin27_BS.nii';
 load_CREx_pref
 ft_defaults % Add FieldTrip subdirectory
 
-alldp = make_pathlist(p1);
+alldp = make_pathlist(pmeg);
 
 if isempty(vsdo)
-    vsdo=1:length(alldp);
+    vsdo = 1:length(alldp);
 end
 
 % Check options of preprocessing for trials before applying it
