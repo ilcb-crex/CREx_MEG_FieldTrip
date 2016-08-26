@@ -6,5 +6,6 @@ The general purpose of theses scripts is to automatized data processing of MEG d
 Figures of results are automatically saved in specific directories created in the data directory.
 
 batches directory : scripts to launch data processing on an entire set of data
+
 ft_CREx : toolbox containing all the functions that interface those of FieldTrip toolbox
 
