@@ -1,4 +1,4 @@
-# MEG_CREx_FieldTrip
+# CREx_MEG_FieldTrip
 Matlab toolbox using FieldTrip functions to process MEG data. 
 Developed by the <a href="http://blricrex.hypotheses.org/" target="_blank">CREx</a> (Centre of Experimental Resources of the <a href="http://www.blri.fr/" target="_blank">Brain and Language Research Institute</a>). 
 
