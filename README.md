@@ -1,4 +1,4 @@
-## <img align="left" src="img/logo_ft_crexp.png" width="100"> Matlab toolbox using <a href="https://github.com/fieldtrip" target="_blank">FieldTrip functions</a> to process MEG data sets  <sup><img align="right" src="img/logo_matlab.png" width="50"></sup>
+## <img align="left" src="img/logo_ft_crexp.png" width="100"> Matlab <img src="img/logo_matlab.png" width="25"> toolbox using <a href="https://github.com/fieldtrip" target="_blank">FieldTrip functions</a> to process MEG data sets  
 
 See FieldTrip documentation : <a href="http://www.fieldtriptoolbox.org/" target="_blank">www.fieldtriptoolbox.org</a>.
 
