@@ -1,17 +1,25 @@
 function [filtData,filtopt] = meg_filt_dataset(rawData,filtopt)
+% Sub-function to launch the filtering by ft_preprocessing FieldTrip function
+% The order of the filters are included as fixed parameters with a value = 2.
+% If no cut-off frequency is given in the filtopt.fc field or if only one
+% value is store for band-pass filter, the missing values are asking on the 
+% command windows.
+%
+%-CREx 20140520 
+%-CREx-BLRI-AMU project: https://github.com/blri/CREx_MEG_FieldTrip
 
-filtData=[];
+filtData = [];
 if nargin<2 || ~isfield(filtopt,'type')
     filtopt = meg_filtopt('ask');
 end
 if ~isfield(filtopt,'fc') || isempty(filtopt.fc) || ...
     (numel(filtopt.fc)==1 && filtopt.fc==0)...
-    || numel(filtopt.fc)>2
+    || numel(filtopt.fc) > 2
     filtopt = meg_filtopt(filtopt);
 end
 
-fc=filtopt.fc;
-fopt=filtopt.type;
+fc = filtopt.fc;
+fopt = filtopt.type;
 
 cfg=[];
 

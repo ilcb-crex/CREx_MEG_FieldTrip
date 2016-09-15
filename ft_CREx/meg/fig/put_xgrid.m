@@ -1,8 +1,27 @@
-function sunit = put_xgrid(xlimits, ylimits, dtsec, fontsz)
+function [sunit, xpos] = put_xgrid(xlimits, ylimits, dtsec, fontsz)
 % Add vertical time grid to the figure
 % A vertical dotted line is drawing each dtsec secondes with the
 % associated label, in secondes or in miliseconds (depending on the 
 % xlimits range)
+
+if nargin < 4
+    fontsz = 12;
+end
+
+if nargin < 3 || isempty(dtsec)
+    dtsec = 0.100;% 100 ms (default supposing MEG data !)
+    % A proper way should be to adapt the time ticks to the data
+    % cf. dtsec to have 10 time markers on the figure 
+end
+
+if nargin < 2 || isempty(ylimits)
+    ylimits = ylim;
+end
+
+if nargin < 1 || isempty(xlimits)
+    xlimits = xlim;
+end
+
 cola = get(gca, 'color');
 if sum(cola)==0
     col = [0.85 0.85 0.85];
@@ -49,6 +68,8 @@ vgrid = vgini(igi:igf);
 vgrid = repmat(vgrid, 2, 1);
 line(vgrid, repmat(ylin, length(vgrid),1)', 'color',[.45 .45 .45],'linestyle',':','linewidth', 0.8)
 
+plab = xlabel(' ');
+xpos = get(plab, 'position');
 
 set(gca, 'xtick',[])
 ylim(yl) 
@@ -62,10 +83,10 @@ end
 % Time labels in ms
 for v = 1:length(vgrid(1,:))
     if msec
-        text(vgrid(1,v), yl(1)-diff(yl)./20, num2str(vgrid(1,v)*1e3,'%3.0f'),...
+        text(vgrid(1,v), yl(1)-diff(yl)./25, num2str(vgrid(1,v)*1e3,'%3.0f'),...
             'fontsize', fontsz, 'horizontalalignment','center', 'color', col)
     else
-        text(vgrid(1,v), yl(1)-diff(yl)./20, num2str(vgrid(1,v)),...
+        text(vgrid(1,v), yl(1)-diff(yl)./25, num2str(vgrid(1,v)),...
             'fontsize', fontsz, 'horizontalalignment','center', 'color', col)     
     end
 end

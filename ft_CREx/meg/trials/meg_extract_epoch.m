@@ -11,38 +11,63 @@ fprintf('\nProcessing of data in :\n%s\n\n', dpath);
 % Check for input
 
 % Default parameters
-dftopt_def = struct('trialfun','ft_trialfun_general',...
+dftopt_def = struct('datatyp', {'clean', 'filt'},...
+                    'trialfun','ft_trialfun_general',...
                     'trigfun','define_default_triggevent',...
-                    'prestim',.5,...
+                    'prestim',0.5,...
                     'postim',1,...
                     'bsl',[],...
                     'dofig',1,...
                     'trialopt', []);
                 
-if nargin <2 || isempty(dftopt)==1
+if nargin < 2 || isempty(dftopt)==1
     dftopt = dftopt_def;
 else
     dftopt = check_opt(dftopt,dftopt_def);
 end
 
+% Chack for parameters
+% Pre-stimulus duration to extract
 if dftopt.prestim < 0
     dftopt.prestim = abs(dftopt.prestim);
 end
 
+% Post-stimulus duration
 if dftopt.postim < 0
     dftopt.postim = abs(dftopt.postim);
 end
-    
+
+% Baseline for baseline correction (empty : no correction)
 if isempty(dftopt.bsl) || length(dftopt.bsl)==1
     BSL = [];
     % BSL = [-1*dftopt.prestim 0];
 else
     BSL = dftopt.bsl;
 end
+
+% Function that define trigger type and values
 freadevent = str2func(dftopt.trigfun);
 
+% Structure of trial processing parameters (filtering, resampling)
 trialopt = dftopt.trialopt;
 strproc = [];
+
+% Data type to find in data directory for epoching carnage
+if ischar(dftopt.datatyp)
+    datatyp = {dftopt.datatyp};
+else
+    datt = dftopt.datatyp;
+    if length(datt)==2
+        if strcmp(datt{2}, 'clean') && strcmp(datt{1}, 'filt')
+            datatyp = datt([2 1]);
+        end
+    else
+        % Let it be
+        datatyp = datt;
+    end
+end
+
+%_____________ GO
 
 fprintf('\nExtraction of trials according to trigger values');
 fprintf('\n--------\nEvents reading\n--------\n');
@@ -81,25 +106,22 @@ if extr
     % values)
     triggevent = freadevent(cfg_event); 
 
-    fprintf('\n-------\nLoad of clean dataset\n-------\n')
-
-    [pdat,ndat] = dirlate(dpath, 'cleanData*.mat');
-
+    fprintf('\n-------\nLoad of dataset to epoch\n-------\n')
+    dataopt = [];
+    dataopt.datatyp = datatyp;
+    [pdat, ndat] = find_datamat(dpath, dataopt); 
+    
     if ~isempty(pdat)
         ok = 1;
     else
-        [pdat,ndat] = dirlate(dpath, 'filtData*.mat');
-        if ~isempty(pdat)
-            ok=1;
-        else
-            disp('!!!')
-            disp('Continuous dataset not found (cleanData*.mat or filtData*.mat)')
-            disp(' ')
-            ok=0;
-        end
+        ok = 0;
+        disp('!!!')
+        disp('Continuous dataset not found (cleanData*.mat or filtData*.mat)')
+        disp(' ')
     end
+    
     if isempty(triggevent(1).name)
-        ok=0;
+        ok = 0;
         disp('!!! Problem with trigger values')
         disp('No one good value found...')
     end
@@ -107,12 +129,13 @@ if extr
         disp(' '),disp('Input dataset :')
         disp(ndat), disp('---------')
         if dftopt.dofig
-            fdos = make_dir([dpath, filesep,'Trials_plots'],1);
+            ppdir = make_dir(fullfile(dpath, '_preproc'), 0);
+            fdos = make_dir([ppdir, filesep,'Trials_plots'],1);
         end
         cleanData = loadvar(pdat,'*Data*');
 
 
-        allTrials=struct;
+        allTrials = struct;
         for nc = 1:length(triggevent)
             dftopt.trig = triggevent(nc);
             if ~isempty(datafile)
@@ -135,18 +158,26 @@ if extr
 
             if dftopt.dofig
                 % Plot and save figures of each trial 
+                % Put figures directory in the general "Preproc_fig" directory
+               
                 meg_trials_fig(trials, pdat, triggevent(nc).name, fdos)
             end
 
             allTrials.(triggevent(nc).name) = trials;
         end
+        
+        %suff = ['_', num2str(dftopt.prestim + dftopt.postim),'s', strproc];
+        %suff(suff=='.') = 'p';
         suff = meg_matsuff(ndat,[num2str(dftopt.prestim+dftopt.postim),'s', strproc]);
         if ~isempty(suff)
             suff = ['_',suff]; 
         end
-        save([dpath,filesep,'allTrials',suff,'.mat'],'allTrials')
+        dtyp = strsplitt(ndat, '_');
+        
+        save([dpath,filesep,'allTrials_',dtyp{1},suff,'.mat'],'allTrials')
     end
 end
+
 %______
 % Check for input options
 function dftopt = check_opt(dftopt, dftopt_def)

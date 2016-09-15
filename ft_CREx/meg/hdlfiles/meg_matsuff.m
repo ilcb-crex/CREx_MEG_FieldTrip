@@ -9,6 +9,9 @@ function newsuff = meg_matsuff(namat, suff)
 % newsuff = meg_matsuff('avgTrial_3rmC_2rmS.mat', '5rmT')
 % Give : >> newsuff = '5rmT_3rmC_2rmS'
 % >> save(['avgTrials_', newsuff], 'data')
+% If several processing of the same kind are done, final meaning is kept
+% For ex., if an HP filter has been firstly apply with a fc = 0.5 Hz, then
+% a new with fc = 1 Hz, only HP1 will be kept
 
 
 if ~isempty(namat)
@@ -17,20 +20,20 @@ if ~isempty(namat)
     end
     itb = strfind(namat,'_');
     if isempty(itb)
-        prevsuff='';
+        prevsuff = '';
     else
         prevsuff = namat(itb(1)+1:end);  
     end
 
     if nargin==2 && ~isempty(suff) && ischar(suff)
         if strcmp(suff(1),'_')
-            suff=suff(2:end);
+            suff = suff(2:end);
         end
         if strcmp(suff(end),'_')
-            suff=suff(1:end-1);
+            suff = suff(1:end-1);
         end
-        suff(suff=='-')='_';
-        suff(suff=='.')='p';
+        suff(suff=='-') = '_';
+        suff(suff=='.') = 'p';
         if ~isempty(prevsuff)
             newsuff = [suff,'_',prevsuff];
         else

@@ -61,7 +61,6 @@ end
 % Ndip x Ntimes (comes from individual source analysis)
 % Nsubj x Ndip x Ntimes (comes from grand average processing)
 
-
 %- Compute new baseline correction
 
 % [ 1 ] - Z-normalization considering activity before priming

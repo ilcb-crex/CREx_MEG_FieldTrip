@@ -2,15 +2,15 @@
 % Parameters to adjust
 
 %--- Architecture indiquant l'accès aux donnees sources
-p0 = 'F:\BaPa';
+p0 = 'H:\PWD';
 pso = cell(1,2);
 pso(1,:)= {{p0} , 0};
-pso(2,:)= {{'CAC'}, 0}; 
-pso(3,:)= {{'S'}, 1}; 
+pso(2,:)= {{'Set_'}, 1}; 
+pso(3,:)= {{'pure'}, 0}; 
 % pso(4,:)={{'Run_concat'},0};
 
 %--- Indice de pso indiquant les dossiers Subject 
-isubj = 3;
+isubj = 2;
 
 
 %--- Vecteur des indices des donnees des sujets a traiter selon pso
@@ -18,7 +18,7 @@ isubj = 3;
 vsdo = []; 
 
 %--- Nom du groupe de donnees
-grp_name = 'CAC';
+grp_name = 'pure';
 
 doGA = 1;
 
@@ -29,10 +29,13 @@ template_mri = 'Colin27_BS.nii';
 %--- Type de donnees recherchees en fonction du pretraitement effectue
 % Data preprocessing suffix
 preproc = struct;
-preproc.LPfc    = 40;   % Low-pass frequency
-preproc.resfs   = 240;   % New sample frequency
+preproc.LPfc    = 25;   % Low-pass frequency
+preproc.resfs   = 200;   % New sample frequency
 preproc.crop    = [0 0]; % [t_prestim t_postim](stim : t=0s, t_prestim is negative)
 
+dataopt = [];
+dataopt.datatyp = 'SourceM';
+dataopt.preproc = preproc;
 % ________
 
 load_CREx_pref
@@ -73,7 +76,7 @@ else
 end
 
 % Paths list of all MAT files
-[sopaths, subjlist] = meg_GA_prep_datapath(spaths, psm, sourcename);
+[sopaths, subjlist] = meg_GA_prep_datapath(spaths, psm, dataopt);
 Nsubj = length(subjlist);
 
 % Store all source data in the same structure

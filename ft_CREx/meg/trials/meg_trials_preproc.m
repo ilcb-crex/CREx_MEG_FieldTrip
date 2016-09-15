@@ -42,8 +42,10 @@ function [newtrialData,trialopt,strproc] = meg_trials_preproc(trialData,trialopt
 % -----
 % This function uses FieldTrip specific functions :
 % ft_preproc_lowpassfilter, ft_resampledata and ft_redefinetrial
-%______________________
-% CREx 30/10/2013
+%
+%_____
+%-CREx 20131030
+%-CREx-BLRI-AMU project: https://github.com/blri/CREx_MEG/fieldtrip_process
 
 if (isempty(trialData) && nargin<2) || (nargin==2 && isempty(trialopt)==1)
   disp(' ')

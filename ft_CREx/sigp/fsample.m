@@ -1,4 +1,10 @@
 function fs = fsample(timevect)
+% Compute the sample frequency from a time vector
+% If timevect is a cell, only the first element (timevect{1}) is used for
+% sample frequency calculation
+%
+% -- CREx 2012 
+% https://github.com/chris-zielinski/MEG_FieldTrip_CREx
 
 if iscell(timevect)
     timevect = timevect{1};
@@ -8,5 +14,5 @@ try
     fs = (length(timevect)-1)/(max(timevect)-min(timevect));
 catch 
     fs = [];
-    disp('Impossible to compute sample frequency from input time vector')
+    disp('Impossible to compute sample frequency from the input time vector')
 end

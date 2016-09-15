@@ -128,16 +128,14 @@ for i = 1 : length(supcond)
                     addsav = def_name({supcond{i} ;  Alab{ir}});
                     savnam = ['clustime_aROI_', grpnam, addsav,'_', fylim{k}];
                     export_fig([psav, filesep, savnam,'.jpg'],'-m2.5','-nocrop') %,'-zbuffer') %'.eps'
-                     export_fig([psav, filesep, savnam,'.eps'],'-nocrop')
-                    % plot2svg([psav, filesep, savnam,'.svg']) %--> don't
-                    % transform tex code
+                   % export_fig([psav, filesep, savnam,'.eps'],'-nocrop')
+                    plot2svg([psav, filesep, savnam,'.svg'])
                     close
                 end
             end
         end 
     end
 end
- 
 
 function ROIfig(time, yc, col, legstr, titstr, Clust, xlimit, ylimit, Cci)
     if ~isempty(Clust.dur)
@@ -319,7 +317,7 @@ function YL = det_ylim(SavgROI, iroi)
                 ycond(ic, 1) = min(avg);
                 ycond(ic, 2) = max(avg);
             else
-                ec = SavgROI.(fcond{ic}).avgROI{ir}.confintROI{ir};
+                ec = SavgROI.(fcond{ic}).confintROI{ir};
                 ycond(ic, 1) = min(avg - ec);
                 ycond(ic, 2) = max(avg + ec);
             end

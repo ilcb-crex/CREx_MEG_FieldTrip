@@ -1,7 +1,13 @@
-function [allFFT, freq] = meg_fft_calc(FTData)
+function [allFFT, freq] = meg_fft_calc(Sdat)
+% Compute fft on continuous data for data inspection during data cleaning
+% Sdat : FieldTrip data structure 
 
-fsamp = FTData.fsample;
-xall = FTData.trial{1};
+if ~isfield(Sdat, 'fsample')
+    fsamp = fsample(Sdat.time{1});
+else
+    fsamp = Sdat.fsample;
+end
+xall = Sdat.trial{1};
 % The length of data is assumed to be constant for all channel
 % Number of point used for FFT calculation
 nsamp = 2^nextpow2(length(xall(1,:)));

@@ -2,12 +2,11 @@
 % Parameters to adjust
 
 % Paths for MEG datasets
-p0 = 'F:\bapa_mseeg';
+p0 = 'H:\bapa_mseeg';
 
 p1 =    {{p0} , 0
+        {'S04'}, 0
         {'MEG'}, 0
-        {'S01'}, 0
-        {'Run'}, 1
          }; 
 
 vdo = [];  

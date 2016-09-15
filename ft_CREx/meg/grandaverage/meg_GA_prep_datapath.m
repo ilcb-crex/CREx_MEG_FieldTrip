@@ -1,4 +1,4 @@
-function  [datpaths, subjlist] = meg_GA_prep_datapath(subjpaths, datarch, datname)
+function  [datpaths, subjlist] = meg_GA_prep_datapath(subjpaths, datarch, dataopt)
 % Search for data name datname inside each subject's directory (subjpaths),
 % and according to the searching architecture directory datarch.
 
@@ -23,10 +23,10 @@ for ns = 1 : length(subjpaths)
     
     for np = 1 : length(dpaths)     
         
-        fprintf('\nSearch of : %s\nInside : %s\n\n', datname, dpaths{np});
+        fprintf('\nSearch of : %s*.mat\nInside : %s\n\n', dataopt.datatyp, dpaths{np});
         
-        [pmat, nmat] = dirlate(dpaths{np}, datname);
-      
+        [pmat, nmat] = find_datamat(dpaths{np}, dataopt);
+        
         if ~isempty(pmat)
             disp(['Find : ',nmat]) 
             datpaths{j,1} = pmat ;

@@ -7,7 +7,7 @@ if ischar(Cstr)
     if length(Cstr(:,1))>1
         Cstr=cellstr(Cstr);
     else
-        Cstr={Cst};
+        Cstr={Cstr};
     end
 end
 

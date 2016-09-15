@@ -31,12 +31,15 @@ if ~isempty(pdata) && ~isempty(pica)
         try
             ICAcomp = loadvar(pica,'comp*');
             MEGdata = loadvar(pdata,'*Data*');
-            cleancompData = ft_rejectcomponent(cfg,ICAcomp,MEGdata);
+            cleanData = ft_rejectcomponent(cfg,ICAcomp,MEGdata);
+            % Keep artpad field (from padart padding process by
+            % meg_artefact_padding)
             if isfield(MEGdata,'artpad')
-                cleancompData.artpad=MEGdata.artpad;
+                cleanData.artpad = MEGdata.artpad;
             end
-            cleancompData.badcomp=badcomp;
+            cleanData.badcomp = badcomp;
 
+          %  save cleanData cleanData
             % Save the new data structure
             suff=[num2str(length(badcomp)),'rmC'];
             newsuff = meg_matsuff(ndata,suff);
@@ -45,7 +48,7 @@ if ~isempty(pdata) && ~isempty(pica)
             if ~isempty(dm)
                 newnam = [newnam,'_n'];
             end
-            save(newnam,'cleancompData')
+            save(newnam,'cleanData')
         catch
             disp('!!!!!!! Reject of component impossible !!!!!!!')
         end

@@ -34,6 +34,10 @@ function meg_cleanup_filt(datapath, filtopt)
 %
 % Save the new filtering data in path directory
 %
+%____
+%-CREx 20140520 
+%-CREx-BLRI-AMU project: https://github.com/blri/CREx_MEG/fieldtrip_process
+
 
 fprintf('\n\t\t-------\nApply filter on dataset\n\t\t-------\n')
 fprintf('\nProcessing of data in :\n%s\n\n', datapath);
@@ -74,7 +78,8 @@ if ~isempty(rawData)
     disp(' '), disp('Input data :')
     disp(pmat), disp(' ')
     
-    % Check for filtopt options
+    % Check for filtopt options, ask for frequencies if filtopt.type =
+    % 'ask' or if filtopt.fc is incorrect.
     filtopt = meg_filtopt(filtopt);
     
     % Apply filter
@@ -88,14 +93,14 @@ if ~isempty(rawData)
         if length(fc) == 1
             fc = repmat(fc, 1, 2);
         end
-        % Save the FieldTrip structure of the filtered data
         
+        % Save the FieldTrip structure of the filtered data        
         if strcmpi(fopt, 'bp') || strcmpi(fopt, 'hp')
-            fstr = [fstr,'_HP', num2str(fc(1)), 'Hz'];
+            fstr = [fstr, '_hp', num2str(fc(1))];
         end
         
         if strcmpi(fopt, 'bp') || strcmpi(fopt, 'lp')
-            fstr = ['_LP', num2str(fc(2)),'Hz'];
+            fstr = [fstr, '_lp', num2str(fc(2))];
         end
 
         fstr(strfind(fstr,'.')) = 'p'; 
@@ -104,14 +109,16 @@ if ~isempty(rawData)
         
         S = struct([namvar, 'Data'], filtData); %#ok
         
-        save([datapath,filesep,namsav,'Data_',newsuff],'-struct', 'S')
+        save([datapath,filesep,namsav,'Data',newsuff],'-struct', 'S')
 
         fprintf('\n\nFiltering data : %s \nsave in datapath %s\n\n',...
-            [namsav,'Data_',newsuff,'.mat'], datapath)
+            [namsav,'Data',newsuff,'.mat'], datapath)
         
         if filtopt.figflag==1
             % Make some figures of the results
-            meg_filt_fig(filtData,rawData,filtopt,datapath,1:3) 
+            chan = filtData.label(1:3);
+            meg_filt_fig(filtData, rawData, filtopt, datapath, chan) 
+            
             % 1:3 : index of the channels to be plotted
         end
     end

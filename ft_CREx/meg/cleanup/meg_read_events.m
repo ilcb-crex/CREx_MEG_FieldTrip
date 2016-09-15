@@ -11,9 +11,9 @@ fprintf('\nProcessing of data in :\n%s\n\n', dirdat);
 datapath = filepath4d(dirdat);
 if ~isempty(datapath)
     if savtxt == 1
-        [p1,d1]=fileparts(dirdat);
-        [p2,d2]=fileparts(p1);
-        [T,d3]=fileparts(p2); %#ok Compat M7.5
+        [p1,d1] = fileparts(dirdat);
+        [p2,d2] = fileparts(p1);
+        [T,d3] = fileparts(p2); %#ok Compat M7.5
         savpath = fullfile(dirlist,['All_events_list_',d3,'_',d2,'_',d1,'.txt']); 
     end
     cfg_rawData = meg_disp_event(datapath, savpath);

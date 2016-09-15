@@ -2,32 +2,27 @@
 % Parameters to adjust
 
 %--- Architecture indiquant l'accès aux donnees ERF
-p0 = 'F:\BaPa';
-perf = cell(1,2);
-perf(1,:)= {{p0} , 0};
-perf(2,:)= {{'DYS'}, 0}; 
-perf(3,:)= {{'S'}, 1}; % <=> Subject directories isubj = 3;
-% perf(4,:)={{'Run_concat'},0};
-
-%--- Indice de perf indiquant les dossiers Subject 
-isubj = 3;
-
+p0 = 'H:\bapa_mseeg';
+perf = {{p0} , 0
+        {'S'}, 1
+        {'MEG'}, 0 };
 
 %--- Vecteur des indices des donnees des sujets a traiter selon pso
 % vsdo = [] : tous les sujets trouves a partir de l'architecture pso
 vsdo = []; 
 
 %--- Nom du groupe de donnees
-grp_name = 'DYS';
+grp_name = 'mseeg';
 
 doGA = 1;
 
 %--- Type de donnees recherchees en fonction du pretraitement effectue
-% Data preprocessing suffix
-preproc = struct;
-preproc.LPfc    = 40;   % Low-pass frequency
-preproc.resfs   = 240;   % New sample frequency
-preproc.crop    = [0 0]; % [t_prestim t_postim](stim : t=0s, t_prestim is negative)
+datopt = [];
+datopt.datatyp = 'avgTrials';
+datopt.preproc.HPfc    = 1;     % (Hz)
+datopt.preproc.LPfc    = 25;    % (Hz)
+datopt.preproc.resfs   = 200;   % (Hz)
+datopt.preproc.crop    = [0 0]; % (s)
 
 % ________
 
@@ -45,9 +40,7 @@ if ~isempty(grp_name)
     grp_name = ['_',  grp_name];
 end
 
-strproc = preproc_suffix(preproc);
-
-matname = ['avgTrials*',strproc,'*.mat'];
+strproc = preproc_suffix(datopt.preproc);
 
 GAdir = make_dir([p0,filesep,'GA_ERF', grp_name, strproc],1);
 
@@ -66,7 +59,7 @@ if doGA==1
     end
     
     % Paths list of all MAT files
-    [avgpaths, subjlist] = meg_GA_prep_datapath(spaths, psm, matname);
+    [avgpaths, subjlist] = meg_GA_prep_datapath(spaths, psm, datopt);
     Nsubj = length(subjlist);
     
     % Store all source data in the same structure

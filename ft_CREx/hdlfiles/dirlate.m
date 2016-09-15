@@ -10,6 +10,8 @@ function [pathfile, namefile] = dirlate(path, nam)
 % All matching name of file 'avgTrials*.mat' will be found by the matlab
 % function "dir". Then, the most recent one will be chosen.
 
+fprintf('Search of : %s\n', nam);
+
 dfile = dir([path,filesep,nam]);
 if ~isempty(dfile)
     if length(dfile)>1
@@ -20,7 +22,6 @@ if ~isempty(dfile)
         dat = cell2mat({dfile.datenum});
         dfile = dfile(dat==max(dat));
         fprintf('Most recent data will be use :\n%s', dfile.name)
-
         fprintf('--------\n')
     end
     namefile = dfile.name;

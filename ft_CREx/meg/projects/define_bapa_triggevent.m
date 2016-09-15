@@ -10,7 +10,7 @@ triggevent=struct('name',[],'value',[],'eventyp',repmat({eventyp},1,2));
 
 
 
-if ~isempty(find(trigvalues==2,1)) % On est dans un bon run (et pas un BaPa par exemple)
+if ~isempty(find(trigvalues==2,1)) % On est dans un bon run
     
     triggevent(1).name = 'Ba';
     triggevent(2).name = 'Pa';

@@ -1,4 +1,12 @@
 function meg_chancheck_fig(ftData, dirpath, datnam)
+% Display the layout of MEG channels with an indication about the mean
+% value of the Hilbert envelop of the data at each channel
+% The value is normalized by the minimum enveloppe value found across all 
+% the channels. 
+% A value of 4 for channel A42 indicate that the mean amplitude of Hilbert
+% envelop of the data recording by this channel is 4 order higher than the
+% minimum mean value found in the whole data set.
+
 
 if nargin<3
     datnam = 'MEGdata';
@@ -15,10 +23,10 @@ x = x - repmat(mean(x,2),1,length(x(1,:)));
 ncapt = length(x(:,1));
 xmh = zeros(ncapt,1);
 
-for c = 1:ncapt
-    th_1 = hilbert(x(c,:));               % Transformee de Hilbert
-    th_2 = sqrt(x(c,:).^2 + th_1.*conj(th_1));   % Enveloppe du signal
-    xmh(c) = mean(th_2);
+for ic = 1:ncapt
+    th_1 = hilbert(x(ic,:));               % Transformee de Hilbert
+    th_2 = sqrt(x(ic,:).^2 + th_1.*conj(th_1));   % Enveloppe du signal
+    xmh(ic) = mean(th_2);
 end
 
 col = colormap_blue2red;
@@ -28,8 +36,8 @@ cfg = [];
 cfg.grad = ftData.grad;
 cfg.layout ='4D248.lay';
 lay = ft_prepare_layout(cfg);
-lay.label=lay.label(1:end-2);
-lay.pos=lay.pos(1:end-2,:);
+lay.label = lay.label(1:end-2);
+lay.pos = lay.pos(1:end-2,:);
 
 x = lay.pos(:,1);
 y = lay.pos(:,2);
@@ -48,9 +56,9 @@ if length(datalabel) < length(lay.label)
 else
     labok = lay.label;
 end
-indsort=zeros(length(labok),1);
-for c=1:length(labok)
-    indsort(c) = find(strcmp(datalabel,labok{c})==1);
+indsort = zeros(length(labok),1);
+for ic = 1:length(labok)
+    indsort(ic) = find(strcmp(datalabel,labok{ic})==1);
 end
 xmh = xmh(indsort);
 
@@ -62,10 +70,10 @@ ft_plot_lay(lay, 'point', true, 'pointsymbol','.','pointsize',1,'pointcolor',[1 
 
 hold on
 
-for c = 1:ncapt
-    icol = find(val<=xmh(c),1,'last');
-    tx=text(x(c), y(c),labok{c});
-    if mean(col(icol,:))>.85
+for ic = 1 : ncapt
+    icol = find(val <= xmh(ic),1,'last');
+    tx = text(x(ic), y(ic), labok{ic});
+    if mean(col(icol,:)) > 0.85
         txcol = [0 0 0];
     else
         txcol = [1 1 1];
@@ -73,7 +81,7 @@ for c = 1:ncapt
     set(tx,'fontsize',9,'fontweight','bold','backgroundcolor',col(icol,:),'color',txcol)    
 end
 colormap(col);
-cb=colorbar;
+cb = colorbar;
 
 %pos = get(cb,'position');
 set(cb,'position',[0.91 0.024 0.029 0.186])
@@ -90,10 +98,10 @@ annotation(gcf,'textbox','String',tit,'interpreter','none',...
     'FitBoxToText','off','Position',[0.0033 0.9427 0.9489 0.0525],...
     'backgroundcolor',[1 1 1]);
 
-export_fig(fullfile(dirpath,['ChanCheck_',datnam,'.jpg']),'-m1.5')
+ppdir = make_dir(fullfile(dirpath, '_preproc'), 0);
+figpath = [ppdir, filesep, 'ChanCheck_',datnam,'.jpg'];
+export_fig(figpath,'-m1.5')
 close
 
-disp(' ')
-disp('Figure showing mean values saved as :')
-disp(fullfile(dirpath,['ChanCheck_',datnam,'.jpg'])), disp(' ')
+fprintf('\nFigure showing mean values saved as :\n, %s\n', figpath)
 

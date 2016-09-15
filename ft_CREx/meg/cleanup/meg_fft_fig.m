@@ -1,37 +1,37 @@
-function meg_fft_fig(FTData,freq,allFFT,rawdatapath,pathsavfig,datatyp)
-% Genere les figures representant les donnees MEG brutes et les spectres en
+function meg_fft_fig(ftdat, freq, allfft, rawdatapath, pathsavfig, datatyp)
+% Format fft figures Genere les figures representant les donnees MEG brutes et les spectres en
 % frequence associes.
 % Mise en forme tres specifique
 
-if nargin<6
-    datatyp='raw';
-    typtit='Raw';
+if nargin < 6
+    datatyp = 'raw';
+    typtit = 'Raw';
 else
     switch datatyp
         case 'raw'
-            typtit='Raw';
+            typtit = 'Raw';
         case 'filt'
-            typtit='Filtered';
+            typtit = 'Filtered';
         otherwise
-            typtit=['Preprocessed (',datatyp,')'];
+            typtit = ['Preprocessed (',datatyp,')'];
     end
 end
 if nargin<5 || isempty(dir(pathsavfig))
-    pathsavfig=make_dir([pwd,filesep,'FFTplots'],1);
+    pathsavfig = make_dir([pwd,filesep,'FFTplots'],1);
 end
 if nargin<4
-    rawdatapath=pwd;
+    rawdatapath = pwd;
 end
 
-td = FTData.time{1};
-xall = FTData.trial{1};
+td = ftdat.time{1};
+xall = ftdat.trial{1};
 
 lgc = length(xall(:,1));
 nbp = 6; % Une figure par 6 canaux
 vfig = 1:nbp:lgc;
 
 % Vecteur utilise pour decaler vers le bas chaque subplot
-vputbottom = .008:.005:.008+5*.005;
+vputbottom = 0.008 : 0.005 : 0.008+5*0.005;
 
 for nf = 1:length(vfig)
     nfs=num2str(nf);
@@ -58,7 +58,7 @@ for nf = 1:length(vfig)
             % Fonction put_figtext de la CREx_Toolbox permettant d'apposer
             % du texte sur la figure (coin superieur gauche ici, avec un
             % texte en blanc sur fond noir) - pour indiquer le canal MEG
-            put_figtext(FTData.label{numchan},'nw',12,[1 1 1],[0 0 0]);
+            put_figtext(ftdat.label{numchan},'nw',12,[1 1 1],[0 0 0]);
             % Titre si premiere ligne de subplot de la figure
             if ns==1
                 title([typtit,' MEG data per channel'],'fontweight','bold')
@@ -67,8 +67,8 @@ for nf = 1:length(vfig)
             %------
             % Subplot FFT totale en loglog
             subplot(nbp,4,(ns-1)*4+4)
-            loglog(freq,allFFT(numchan,:));
-            if sum(allFFT(numchan,:))>0
+            loglog(freq,allfft(numchan,:));
+            if sum(allfft(numchan,:))>0
                 axis tight; grid on;
             end
             xlabel('Frequency (Hz) [log]')
@@ -97,7 +97,7 @@ for nf = 1:length(vfig)
         'LineStyle','none','HorizontalAlignment','center',...
         'FitBoxToText','off','Position',[0.1 0.88 0.9 0.12]);
 
-    namfig=['FFT_',datatyp,'Data_',nfss,'_chan_',num2str(vfig(nf)),'_to_',num2str(iend)];
+    namfig=['fft_',datatyp,'Data_',nfss,'_chan_',num2str(vfig(nf)),'_to_',num2str(iend)];
     export_fig([pathsavfig,filesep,namfig,'.jpeg'],'-m1.5','-nocrop')
     close
 end

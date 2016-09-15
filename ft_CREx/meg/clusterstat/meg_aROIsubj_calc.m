@@ -78,6 +78,7 @@ time = sourceGA.(cat{1}).(cond{1}).time;
 sourceGA_aROI = struct;
 for i = 1 : length(cat)
     sourceROI = struct;
+    cond = fieldnames(sourceGA.(cat{i}));
     for c = 1 : length(cond)
         if fdif
             co = [ diffcond{c, 1},'_', diffcond{c, 2}];

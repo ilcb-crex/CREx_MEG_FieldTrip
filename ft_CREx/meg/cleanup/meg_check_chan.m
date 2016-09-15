@@ -171,9 +171,9 @@ if anylaunch && oklaunch
     disp('Remove channel(s) -> 2')
     badfound=input('                  -> ');
     if badfound==2
-        CHANstr=enter_badchan;
+        CHANstr = enter_badchan;
     else
-        CHANstr={'MEG'};
+        CHANstr = {'MEG'};
     end
 end
 % ---
@@ -184,14 +184,14 @@ end
 if ftdisp
     if isempty(datapath) 
          % Find data file
-        [g,p,ftlaunch]=uigetfile('*','Find & Select data file');
+        [g,p,ftlaunch] = uigetfile('*','Find & Select data file');
         if ftlaunch
-            datapath=[p,g];
+            datapath = [p,g];
         else
             disp('So NO data available...')
         end
     else
-        ftlaunch=1;
+        ftlaunch = 1;
     end
 end
 if ftdisp && ftlaunch
@@ -298,10 +298,10 @@ end
 
 % Function to enter bad channel on the command window
 function CHANstr = enter_badchan
-    CHANstr=cell(1,20);
-    CHANstr{1}='MEG';
-    goon=1;
-    n=2;
+    CHANstr = cell(1,20);
+    CHANstr{1} = 'MEG';
+    goon = 1;
+    n = 2;
     fprintf('\nEnter BAD channel name (ex. : A111, a111 or 111 only)\n\t-------------\n\n'); 
     while goon
         ch = input(['Bad channel n°',num2str(n-1),' : '],'s');
@@ -314,14 +314,14 @@ function CHANstr = enter_badchan
                 end
             end
         end
-        CHANstr{n}=['-',ch];
+        CHANstr{n} = ['-',ch];
         disp(' ')
         disp('Enter a new bad channel (1)')
         goon=input('                or stop (0) : ');
         disp(' ')
-        n=n+1;
+        n = n+1;
     end
-    CHANstr=CHANstr(1:n-1);
+    CHANstr = CHANstr(1:n-1);
 
 
 

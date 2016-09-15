@@ -38,7 +38,7 @@ if isempty(pTmat)
 end
 
 % Check for HeadModel*.mat : head model
-[pHdm, nHdm] = dirlate(megpath,'HeadModel*.mat');
+[pHdm, nHdm] = dirlate(megpath,'headModel*.mat');
 if isempty(pHdm)
     [pHdm, nHdm] = dirlate(megpath,'volcond*.mat');  % Previous name
 end
@@ -104,13 +104,13 @@ end
 % Average of all trials 
 disp('Averaging trials')
 cfg = [];
-cfg.keeptrials = 'no';  
+cfg.keeptrials = 'yes'; %'no';  
 cfg.covariance = 'yes';
 cfg.removemean = 'no';  % Baseline correction already done
 cfg.covariancewindow = 'all';
 avgTrialsAll = ft_timelockanalysis(cfg, dataAll);
 
-cfg.keeptrials = 'yes';
+% cfg.keeptrials = 'yes';
 
 % Average of trials per condition
 avgTrialsCond = struct;
@@ -185,9 +185,9 @@ suff = meg_matsuff(nTmat, strproc);
 if ~isempty(suff)
     suff=['_',suff];
 end
-save([megpath,filesep,'SourceModel_hdmYH_Colin27BS',suff],'sourceCond')
+save([megpath,filesep,'sourceModel_hdmYH',suff],'sourceCond')
 save([megpath,filesep,'avgTrials',suff],'avgTrialsCond')
-save([megpath,filesep,'LeadField_hdmYH_Colin27BS'],'leadfield_grd')
+save([megpath,filesep,'leadfield_hdmYH'],'leadfield_grd')
 
 
 %

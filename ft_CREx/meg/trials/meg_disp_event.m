@@ -46,16 +46,16 @@ if nargin~=2 || isempty(savpath)
 else
     namsavdef = 'All_events_list.txt';
     if isempty(strfind(savpath,filesep)) % savpath est un nom seul et non un chemin
-        savpath = [pwd,filesep,savpath];   % Chemin par defaut : pwd
+        savpath = [pwd, filesep, savpath];   % Chemin par defaut : pwd
     end
     if isdir(savpath) % savpath est le chemin d'un dossier et non du fichier txt a sauver
-        savpath = fullfile(savpath,namsavdef);
+        savpath = fullfile(savpath, namsavdef);
         sav = 1;
     else
         if ~strcmp(savpath(end-3:end),'.txt')
             dos = fileparts(savpath);
             if isdir(dos)
-                savpath = fullfile(dos,namsavdef);
+                savpath = fullfile(dos, namsavdef);
                 sav = 1;
             else
                 try
@@ -86,7 +86,7 @@ end
 fprintf('\nRead event(s) in :\n%s\n',datapath);
 fprintf('\n--------\nHeader informations\n--------\n');
 fprintf('Reading of header by ft_read_header\n\n') 
-[fe,dur,nbchan] = deal([]);
+[fe, dur, nbchan] = deal([]);
 try
     hdr = ft_read_header(datapath);
     fnam = fieldnames(hdr);
@@ -114,9 +114,9 @@ cfg.trialdef.triallength = Inf; % bloc pris en entier
 try
     cfg_rawData = ft_definetrial(cfg); 
     if isempty(cfg_rawData.event)
-        ok=0;
+        ok = 0;
         msg = 'No one event found in dataset';
-        S = struct('event',struct('nothing',[]));
+        S = struct('event', struct('nothing',[]));
     else
         ok=1;
         S = cfg_rawData.event;
@@ -135,16 +135,16 @@ end
 fnam = fieldnames(S);
 bigC = cell(length(S),size(fnam,1));
 for nf = 1:size(fnam,1)
-    bigC(:,nf)={S.(fnam{nf})};
+    bigC(:,nf) = {S.(fnam{nf})};
 end
 if sav
     diary(savpath)
 end
 fprintf('\n\t\t--------\n\t\tList of events\n\t\t--------\n\n');
-fprintf('\nData path : %s\n\n',datapath);
-disp(['Number of channels : ',num2str(nbchan)])
-disp(['Recording duration (s) : ',num2str(dur)])
-disp(['Sample frequency (Hz) : ',num2str(fe)])
+fprintf('\nData path : %s\n\n', datapath);
+disp(['Number of channels : ', num2str(nbchan)])
+disp(['Recording duration (s) : ', num2str(dur)])
+disp(['Sample frequency (Hz) : ', num2str(fe)])
 disp(' ')
 disp('      --------------------------')
 disp(fnam')
@@ -153,30 +153,47 @@ disp(bigC)
 disp(' ')
 disp('      --------------------------')
 disp(' ')
+
 % Count of different kinds of events 
 if sum(strcmp('type',fnam)) && sum(strcmp('value',fnam))
-    typ=extract_field(S,'type');
-    [a,T,c]=unique(typ,'rows'); %#ok
-    nbt=length(a(:,1));
+
+    % Type of event should be strings
+    typ = extract_field(S, 'type');
+    
+    [uctyp, T, ic] = unique(typ, 'rows'); %#ok
+    nbt = length(uctyp(:,1));
     disp([num2str(nbt),' type(s) of event found :'])
     disp(' ')
-    val=extract_field(S,'value');
-    for j=1:nbt
-        if ischar(a(j,:))
-            disp(['TYPE n°',num2str(j),' : ',a(j,:),' - Assigned values :'])
+    % Value can be number or char. To avoid error because of empty values
+    % at the first structure S(1).value which does not help to recognize
+    % the data type for extracting all the data structure field, we
+    % transform all values in char array
+    for k = 1 : length(S)
+        if isempty(S(k).value)
+            S(k).value = ' ';
         else
-            disp(['TYPE n°',num2str(j),' : ',num2str(a(j,:)),' - Assigned values :'])
+            if isnumeric(S(k).value)
+                S(k).value = num2str(S(k).value);
+            end
+        end
+    end
+    val = extract_field(S, 'value');
+    for j = 1 : nbt
+        if ischar(uctyp(j,:))
+            disp(['TYPE n°',num2str(j),' : ', uctyp(j,:),' - Assigned values :'])
+        else
+            disp(['TYPE n°',num2str(j),' : ',num2str(uctyp(j,:)),' - Assigned values :'])
         end
         disp(' ')
         disp(' Values   (Number)')
         disp(' ')
         
-        [g,T,h]=unique(val(c==j)); %#ok
-        num=zeros(length(g),1);
-        for ig=1:length(g)
-            num(ig)=length(find(h==ig));
+        [uval, T, h] = unique(val(ic==j, :), 'rows'); %#ok
+        num = zeros(length(uval(:,1)),1);
+        for ig = 1:length(uval(:,1))
+            num(ig) = length(find(h==ig));
         end
-        disp([repmat('   ',ig,1),num2str(g),repmat('     (',ig,1),num2str(num),repmat(')',ig,1)])
+        disp([repmat('   ',ig,1), uval, repmat('     (',ig,1),num2str(num),repmat(')',ig,1)])
         disp(' ')
     end
     disp(' ')
@@ -198,18 +215,37 @@ end
 % Additionnal function
 
 % Extract & Format values stocked into a field
-function val=extract_field(S,field)
-    fnam=fieldnames(S);
-    if ~isempty(strcmp(field,fnam))
+function val = extract_field(S, field)
+    fnam = fieldnames(S);
+    if sum(strcmp(field, fnam))
         if ischar(S(1).(field))
-            val=char({S.(field)});      % Character array
+            val = char({S.(field)});      % Character array
         elseif isnumeric(S(1).(field))
-            val=cell2mat({S.(field)})'; % Matrix of numbers
+            val = cell2mat({S.(field)})'; % Matrix of numbers
         else
-            val={S.(field)}';           % Cellule of values
+            val = {S.(field)}';           % Cellule of values
         end     
     else
-        val=[];
+        val = [];
     end
+    
+    % Replace empty value by blank
+    
+    
+% Bug when empty values were found (inhomogenous cell data) 
+% % Extract & Format values stocked into a field
+% function val = extract_field(S, field)
+%     fnam = fieldnames(S);
+%     if sum(strcmp(field, fnam))
+%         if ischar(S(1).(field))
+%             val = char({S.(field)});      % Character array
+%         elseif isnumeric(S(1).(field))
+%             val = cell2mat({S.(field)})'; % Matrix of numbers
+%         else
+%             val = {S.(field)}';           % Cellule of values
+%         end     
+%     else
+%         val = [];
+%     end
         
         

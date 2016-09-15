@@ -25,7 +25,7 @@ dim = atlas.dim;
 [X, Y, Z]  = ndgrid(1:dim(1), 1:dim(2), 1:dim(3));
 Apos   = [X(:) Y(:) Z(:)];
 
-Sroi = extract_atlas_ROIsurf(atlas, Apos);
+Sroi = atlas_extract_ROIsurf(atlas, Apos);
 
 % pos must only contain integer values to avoid Out of memory errors when 
 % defining the grid by ndgrid

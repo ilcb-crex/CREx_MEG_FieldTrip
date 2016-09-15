@@ -82,7 +82,7 @@ for i = 1 : Np
     if fproj
         for g = 1 : Npj
             sproj = allproj{g};
-            if strfind(dpath, sgrp)
+            if strfind(dpath, sproj)
                 [~, proj{i}] = fileparts(sproj);
             end
         end

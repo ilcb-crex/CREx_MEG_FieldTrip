@@ -1,5 +1,6 @@
 function meg_cleanup_chancheck(dirpath, opt)
-
+% Check for continuous data noise per channel
+% Ratio of Hilbert envelop calculated on the absolute value
 fprintf('\nProcessing of data in :\n%s\n\n',dirpath);
 
 if ~isfield(opt,'datatyp') || isempty(opt.datatyp) 
@@ -14,7 +15,7 @@ if strcmpi(opt.datatyp,'4d')==1
         disp('of the mean envelop signal')
         cfg = [];
         cfg.hpfilter = 'yes';
-        cfg.hpfreq   = .5;
+        cfg.hpfreq   = 0.5;
         ftData = ft_preprocessing(cfg,ftData);
         datnam = '4dData_fHP0.5Hz';
         ok = true;

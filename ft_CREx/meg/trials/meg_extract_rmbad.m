@@ -1,16 +1,20 @@
-function meg_extract_rmbad(datapath, badtrials)
+function meg_extract_rmbad(datapath, badtrials, datatyp)
 % Remove bad trials
 fprintf('\nProcessing of data in :\n%s\n\n------\n', datapath);
 fprintf('Removing of bad trials\n\n');
 if ~nargin
     datapath = pwd;
 end
+
+if nargin < 3
+    datatyp = 'allTrials';
+end
     
 % Check if data matrix is available
-[pmat, nmat] = dirlate(datapath,'allTrials*.mat');
+[pmat, nmat] = dirlate(datapath, [datatyp, '*.mat']);
 
 if isempty(pmat)
-    disp('!!! Trials data ''allTrials*.mat'' not found in the directory')
+    disp(['!!! Trials data ''',datatyp,'*.mat'' not found in the directory'])
     return
 end
 

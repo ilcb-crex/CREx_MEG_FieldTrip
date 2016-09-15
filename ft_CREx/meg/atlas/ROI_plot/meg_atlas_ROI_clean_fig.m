@@ -103,7 +103,7 @@ end
 
 Apatch = atlas.ROIpatch;
 Np = length(Apatch);
-colall = [0.85 0.82 0.72];
+colall = [0.92 0.89 0.82]; %[0.85 0.82 0.72];
 
 if ~isempty(figopt.custcolors)
     ccol = true;
@@ -168,7 +168,7 @@ function hpa = draw_otherpatches(ROIpatch, ipatch, col)
     hpa = zeros(Np,1);
     for p = 1: length(ip)
         hpa(p) = patch(ROIpatch{ip(p)}, 'edgecolor','none',...
-                'facecolor',col ,'facealpha',0.25,... %0.35
+                'facecolor',col ,'facealpha',0.35,... %0.25
                 'facelighting','gouraud');
     end
 

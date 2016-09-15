@@ -33,11 +33,12 @@ if ~isfield(badopt,'datatyp') || isempty(badopt.datatyp)
     badopt.datatyp = '4d';
 end
 
-if strcmpi(badopt.datatyp,'4d')==1
-    ftData = meg_extract4d(badopt.dirpath);
-else
-    if length(CHANstr)>1  % Seulement s'il faut oter des capteurs
-        fprintf('\n\t-------\nLoad dataset\n\t-------\n')
+
+if length(CHANstr)>1  % Seulement s'il faut oter des capteurs
+    fprintf('\n\t-------\nLoad dataset\n\t-------\n')
+    if strcmpi(badopt.datatyp,'4d')==1
+        ftData = meg_extract4d(badopt.dirpath);
+    else
         pdat = dirlate(badopt.dirpath,[badopt.datatyp,'*.mat']);
         if ~isempty(pdat)
             ftData = loadvar(pdat,'*Data*');
@@ -46,6 +47,7 @@ else
         end
     end
 end
+
 
 if length(CHANstr)>1
     cfg = [];
@@ -73,7 +75,8 @@ if length(CHANstr)>1
         title(tit,'fontsize',14,'interpreter','none')
         set(gca,'fontsize',13)
         verif_label
-        export_fig([dpath,filesep,'BADchan_',bad,'.jpeg'],'-m1.5') %
+        ppdir = make_dir(fullfile(dpath, '_preproc'), 0);
+        export_fig([ppdir,filesep,'BADchan_',bad,'.jpeg'],'-m1.5') 
         % Good figures but too long (the idea is to process a set
         % of data)
         delete([p;gca])
