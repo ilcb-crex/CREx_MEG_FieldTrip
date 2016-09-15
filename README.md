@@ -7,17 +7,23 @@ Figures of results are automatically saved in specific directories inside the da
 
 A method to define the head model from a template (without the subject's MRI) has been included and adapted from Yuval Harpaz, 2013 (original codes here :  https://github.com/yuval-harpaz/ft_BIU ).
 
+<a href="http://meg.univ-amu.fr/wiki/Main_Page" target="_blank"><img src="/img/logo_MEG.png" width="70"></img></a>  The processing was done with the help of the <a href="http://meg.univ-amu.fr/wiki/Main_Page">Marseille MEG center</a> (France).
+
+<a href="http://www.fieldtriptoolbox.org/" target="_blank"><img src="/img/logo_fieldtrip.png" width="70"></img></a>  FieldTrip toolbox is required to be set in Matlab paths. FieldTrip can be download here : https://github.com/fieldtrip
+FieldTrip tutorials : <a href="http://www.fieldtriptoolbox.org/" target="_blank">http://www.fieldtriptoolbox.org/</a>
+
+
+### Directories content
 * **batches directory** : scripts to launch data processing on an entire set of data
 
 * **ft_CREx** : toolbox containing all the functions that interface those of FieldTrip toolbox
 
+<br/>
 
 
-<a href="http://www.fieldtriptoolbox.org/"><img src="/img/logo_fieldtrip.png" width="70"></img></a>  FieldTrip toolbox is required to be set in Matlab paths. FieldTrip can be download here : https://github.com/fieldtrip
-FieldTrip tutorials : http://www.fieldtriptoolbox.org/
 
 
-<a href="http://meg.univ-amu.fr/wiki/Main_Page"><img src="/img/logo_MEG.png" width="70"></img></a>  The processing was done with the help of the <a href="http://meg.univ-amu.fr/wiki/Main_Page">Marseille MEG center</a> (France).
+
 
 ##
 
