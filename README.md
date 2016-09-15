@@ -17,7 +17,7 @@ A method to define the head model from a template (without the subject's MRI) ha
 FieldTrip tutorials : http://www.fieldtriptoolbox.org/
 
 
-<a href="http://meg.univ-amu.fr/wiki/Main_Page"><img src="/img/logo_MEG.png" width="70"></img></a>  The processing was done with the help of the Marseille MEG center (France).
+<a href="http://meg.univ-amu.fr/wiki/Main_Page"><img src="/img/logo_MEG.png" width="70"></img></a>  The processing was done with the help of the <a href="http://meg.univ-amu.fr/wiki/Main_Page">Marseille MEG center</a> (France).
 
 ##
 
