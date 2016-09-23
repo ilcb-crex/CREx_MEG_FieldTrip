@@ -39,4 +39,4 @@ FieldTrip tutorials : <a href="http://www.fieldtriptoolbox.org/" target="_blank"
 ## "Wiki coming soon !!"
 
 -------
-Developed by the <a href="http://blricrex.hypotheses.org/" target="_blank">CREx</a> (Centre of Experimental Resources of the <a href="http://www.blri.fr/" target="_blank">Brain and Language Research Institute</a>)
+Developed by the <a href="http://blricrex.hypotheses.org/" target="_blank">CREx</a> (Center of Experimental Resources of the <a href="http://www.blri.fr/" target="_blank">Brain and Language Research Institute</a>)
